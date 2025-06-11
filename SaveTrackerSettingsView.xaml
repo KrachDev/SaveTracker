@@ -1,0 +1,450 @@
+﻿<UserControl x:Class="SaveTracker.SaveTrackerSettingsView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             mc:Ignorable="d"
+             d:DesignHeight="500" d:DesignWidth="700"
+             Background="#1E1E1E">
+    <UserControl.Resources>
+        <!-- Dark Mode Button Style -->
+        <Style x:Key="DarkButtonStyle" TargetType="Button">
+            <Setter Property="Background" Value="#0E639C"/>
+            <Setter Property="Foreground" Value="#FFFFFF"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="FontWeight" Value="Medium"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border Background="{TemplateBinding Background}" 
+                                CornerRadius="4"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="{TemplateBinding BorderThickness}">
+                            <ContentPresenter HorizontalAlignment="Center" 
+                                            VerticalAlignment="Center"
+                                            Margin="{TemplateBinding Padding}"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter Property="Background" Value="#1177BB"/>
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter Property="Background" Value="#0A5A94"/>
+                            </Trigger>
+                            <Trigger Property="IsEnabled" Value="False">
+                                <Setter Property="Background" Value="#404040"/>
+                                <Setter Property="Foreground" Value="#808080"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- Orange Button Style for Download -->
+        <Style x:Key="OrangeButtonStyle" TargetType="Button" BasedOn="{StaticResource DarkButtonStyle}">
+            <Setter Property="Background" Value="#CC7A00"/>
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Background" Value="#E68A00"/>
+                </Trigger>
+                <Trigger Property="IsPressed" Value="True">
+                    <Setter Property="Background" Value="#B36B00"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+
+        <!-- Dark GroupBox Style -->
+        <Style x:Key="DarkGroupBoxStyle" TargetType="GroupBox">
+            <Setter Property="Foreground" Value="#FFFFFF"/>
+            <Setter Property="BorderBrush" Value="#404040"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="GroupBox">
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="*"/>
+                            </Grid.RowDefinitions>
+                            <Border Grid.Row="0" 
+                                    Background="#2D2D30" 
+                                    CornerRadius="4,4,0,0"
+                                    BorderBrush="#404040"
+                                    BorderThickness="1,1,1,0">
+                                <ContentPresenter ContentSource="Header" 
+                                                Margin="10,8"/>
+                            </Border>
+                            <Border Grid.Row="1" 
+                                    Background="#252526"
+                                    CornerRadius="0,0,4,4"
+                                    BorderBrush="#404040"
+                                    BorderThickness="1,0,1,1">
+                                <ContentPresenter Margin="{TemplateBinding Padding}"/>
+                            </Border>
+                        </Grid>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- Dark CheckBox Style -->
+        <Style x:Key="DarkCheckBoxStyle" TargetType="CheckBox">
+            <Setter Property="Foreground" Value="#FFFFFF"/>
+            <Setter Property="Background" Value="#FFFFFF"/>
+            <Setter Property="BorderBrush" Value="#666666"/>
+            <Setter Property="BorderThickness" Value="1"/>
+        </Style>
+    </UserControl.Resources>
+
+    <ScrollViewer VerticalScrollBarVisibility="Auto" Background="Transparent">
+        <StackPanel Margin="20">
+            <!-- Header -->
+            <Border Background="#0E639C" CornerRadius="6" Margin="0,0,0,20">
+                <StackPanel Margin="20,15">
+                    <TextBlock Text="Save Tracker" 
+                              FontSize="26" 
+                              FontWeight="Bold" 
+                              Foreground="#FFFFFF" 
+                              Margin="0,0,0,5"/>
+                    <TextBlock Text="Manage game save files and cloud synchronization" 
+                              FontSize="14" 
+                              Foreground="#E6F3FF"/>
+                </StackPanel>
+            </Border>
+
+            <!-- Settings Section -->
+            <GroupBox Header="General Settings" 
+                     Style="{StaticResource DarkGroupBoxStyle}"
+                     Margin="0,0,0,20">
+                <GroupBox.HeaderTemplate>
+                    <DataTemplate>
+                        <TextBlock Text="{Binding}" 
+                                  FontSize="16" 
+                                  FontWeight="SemiBold" 
+                                  Foreground="#4FC3F7"/>
+                    </DataTemplate>
+                </GroupBox.HeaderTemplate>
+                
+                <StackPanel Margin="15">
+                    <!-- Console Setting -->
+                    <Border Background="#3C3C3C" CornerRadius="4" BorderBrush="#555555" BorderThickness="1">
+                        <StackPanel Margin="15">
+                            <DockPanel>
+                                <CheckBox Name="TrackFilesBox" 
+                                          IsChecked="{Binding Settings.TrackFiles}"
+                                          VerticalAlignment="Center"
+                                          Foreground="White"
+                                          Style="{StaticResource DarkCheckBoxStyle}"
+                                          DockPanel.Dock="Left"/>
+                                <TextBlock Text="Track Files" 
+                                           FontSize="14" 
+                                           FontWeight="Medium"
+                                           Foreground="#FFFFFF"
+                                           Margin="10,0,0,0"
+                                           VerticalAlignment="Center"/>
+                            </DockPanel>
+                            <TextBlock Text="Track files created by the game process (Note: Required for cloud save support)" 
+                                       FontSize="12"
+                                       Foreground="#CCCCCC"
+                                       Margin="25,8,0,0"
+                                       
+                                       TextWrapping="Wrap"/>
+                        </StackPanel>
+                    </Border>
+                    <Border Background="#3C3C3C" CornerRadius="4" BorderBrush="#555555" BorderThickness="1">
+                        <StackPanel Margin="15">
+                            <DockPanel>
+                                <CheckBox Name="AutoSyncBox" 
+                                          IsChecked="{Binding Settings.AutoSyncOption}"
+                                          VerticalAlignment="Center"
+                                          Foreground="White"
+
+                                          Style="{StaticResource DarkCheckBoxStyle}"
+                                          DockPanel.Dock="Left"/>
+                                <TextBlock Text="Auto Sync" 
+                                           FontSize="14" 
+                                           FontWeight="Medium"
+                                           Foreground="#FFFFFF"
+                                           Margin="10,0,0,0"
+                                           VerticalAlignment="Center"/>
+                            </DockPanel>
+                            <TextBlock Text="Automatically sync game save files after the game closes" 
+                                       FontSize="12"
+                                       Foreground="#CCCCCC"
+                                       Margin="25,8,0,0"
+                                       
+                                       TextWrapping="Wrap"/>
+                        </StackPanel>
+                    </Border>
+                    <Border Background="#3C3C3C" CornerRadius="4" BorderBrush="#555555" BorderThickness="1">
+                        <StackPanel Margin="15">
+                            <DockPanel>
+                                <CheckBox Name="ShowConsoleBox" 
+                                          IsChecked="{Binding Settings.ShowCosnoleOption}"
+                                          VerticalAlignment="Center"
+                                          Foreground="White"
+
+                                          Style="{StaticResource DarkCheckBoxStyle}"
+                                          DockPanel.Dock="Left"/>
+                                <TextBlock Text="Show Debug Console" 
+                                           FontSize="14" 
+                                           FontWeight="Medium"
+                                           Foreground="#FFFFFF"
+                                           Margin="10,0,0,0"
+                                           VerticalAlignment="Center"/>
+                            </DockPanel>
+                            <TextBlock Text="Enable debug console output for monitoring and troubleshooting save operations" 
+                                       FontSize="12"
+                                       Foreground="#CCCCCC"
+                                       Margin="25,8,0,0"
+                                       TextWrapping="Wrap"/>
+                        </StackPanel>
+                    </Border>
+                </StackPanel>
+            </GroupBox>
+            
+             <!-- Tracker Settings Section -->
+            <GroupBox Header="Tracker Settings" 
+                     Style="{StaticResource DarkGroupBoxStyle}"
+                     Margin="0,0,0,20">
+                <GroupBox.HeaderTemplate>
+                    <DataTemplate>
+                        <TextBlock Text="{Binding}" 
+                                  FontSize="16" 
+                                  FontWeight="SemiBold" 
+                                  Foreground="#4FC3F7"/>
+                    </DataTemplate>
+                </GroupBox.HeaderTemplate>
+                
+                <StackPanel Margin="15">
+                    <!-- Console Setting -->
+                    <Border Background="#3C3C3C" CornerRadius="4" BorderBrush="#555555" BorderThickness="1">
+                        <StackPanel Margin="15">
+                            <DockPanel>
+                                <CheckBox Name="TrackWritesBox" 
+                                          IsChecked="{Binding Settings.TrackWrites}"
+                                          VerticalAlignment="Center"
+                                          Foreground="White"
+                                          Style="{StaticResource DarkCheckBoxStyle}"
+                                          DockPanel.Dock="Left"/>
+                                <TextBlock Text="Track Write " 
+                                           FontSize="14" 
+                                           FontWeight="Medium"
+                                           Foreground="#FFFFFF"
+                                           Margin="10,0,0,0"
+                                           VerticalAlignment="Center"/>
+                            </DockPanel>
+                            <TextBlock Text="Track Write Calls this is most recommend, as it only track only when game saves"
+                                       FontSize="12"
+                                       Foreground="#CCCCCC"
+                                       Margin="25,8,0,0"
+                                       
+                                       TextWrapping="Wrap"/>
+                        </StackPanel>
+                    </Border>
+                    <Border Background="#3C3C3C" CornerRadius="4" BorderBrush="#555555" BorderThickness="1">
+                        <StackPanel Margin="15">
+                            <DockPanel>
+                                <CheckBox Name="TrackReadsBox" 
+                                          IsChecked="{Binding Settings.TrackReads}"
+                                          VerticalAlignment="Center"
+                                          Foreground="White"
+                                          Style="{StaticResource DarkCheckBoxStyle}"
+                                          DockPanel.Dock="Left"/>
+                                <TextBlock Text="Track Read " 
+                                           FontSize="14" 
+                                           FontWeight="Medium"
+                                           Foreground="#FFFFFF"
+                                           Margin="10,0,0,0"
+                                           VerticalAlignment="Center"/>
+                            </DockPanel>
+                            <TextBlock Text="Track read operations (Not recommended): Parses large amounts of data, which may impact performance in some situations." 
+                                       FontSize="12"
+                                       Foreground="#CCCCCC"
+                                       Margin="25,8,0,0"
+                                       
+                                       TextWrapping="Wrap"/>
+                        </StackPanel>
+                    </Border>
+                </StackPanel>
+            </GroupBox>
+
+            
+            <!-- Actions Section -->
+            <GroupBox Header="Save Management" 
+                     Style="{StaticResource DarkGroupBoxStyle}"
+                     Margin="0,0,0,20">
+                <GroupBox.HeaderTemplate>
+                    <DataTemplate>
+                        <TextBlock Text="{Binding}" 
+                                  FontSize="16" 
+                                  FontWeight="SemiBold" 
+                                  Foreground="#4FC3F7"/>
+                    </DataTemplate>
+                </GroupBox.HeaderTemplate>
+                
+                <Grid Margin="15">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="15"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+                    
+                    <!-- Upload Section -->
+                    <Border Grid.Column="0" 
+                            Background="#1A365D" 
+                            CornerRadius="6" 
+                            BorderBrush="#2563EB" 
+                            BorderThickness="1">
+                        <StackPanel Margin="15">
+                            <StackPanel Orientation="Horizontal" Margin="0,0,0,12">
+                                <TextBlock Text="☁" FontSize="20" Foreground="#4FC3F7" VerticalAlignment="Center"/>
+                                <TextBlock Text="Upload Saves" 
+                                          FontSize="16" 
+                                          FontWeight="SemiBold" 
+                                          Foreground="#FFFFFF"
+                                          Margin="10,0,0,0"
+                                          VerticalAlignment="Center"/>
+                            </StackPanel>
+                            <TextBlock Text="Backup your game saves to cloud storage for safekeeping and cross-device access."
+                                      FontSize="12"
+                                      Foreground="#B3D9FF"
+                                      TextWrapping="Wrap"
+                                      Margin="0,0,0,15"/>
+                            <Button Name="UploadButton"
+                                   Content="Upload Now"
+                                   Style="{StaticResource DarkButtonStyle}"
+                                   Height="35"
+                                   Click="UploadButton_Click"/>
+                        </StackPanel>
+                    </Border>
+
+                    <!-- Download Section -->
+                    <Border Grid.Column="2" 
+                            Background="#7C2D12" 
+                            CornerRadius="6" 
+                            BorderBrush="#EA580C" 
+                            BorderThickness="1">
+                        <StackPanel Margin="15">
+                            <StackPanel Orientation="Horizontal" Margin="0,0,0,12">
+                                <TextBlock Text="⬇" FontSize="20" Foreground="#FFAB70" VerticalAlignment="Center"/>
+                                <TextBlock Text="Download Saves" 
+                                          FontSize="16" 
+                                          FontWeight="SemiBold" 
+                                          Foreground="#FFFFFF"
+                                          Margin="10,0,0,0"
+                                          VerticalAlignment="Center"/>
+                            </StackPanel>
+                            <TextBlock Text="Restore your game saves from cloud storage to continue your progress on this device."
+                                      FontSize="12"
+                                      Foreground="#FFCCAA"
+                                      TextWrapping="Wrap"
+                                      Margin="0,0,0,15"/>
+                            <Button Name="DownloadButton"
+                                   Content="Download Now"
+                                   Style="{StaticResource OrangeButtonStyle}"
+                                   Height="35"
+                                   Click="DownloadButton_Click"/>
+                        </StackPanel>
+                    </Border>
+                </Grid>
+            </GroupBox>
+
+            <!-- Status Section -->
+            <GroupBox Header="Status" 
+                     Style="{StaticResource DarkGroupBoxStyle}"
+                     Margin="0,0,0,20">
+                <GroupBox.HeaderTemplate>
+                    <DataTemplate>
+                        <TextBlock Text="{Binding}" 
+                                  FontSize="16" 
+                                  FontWeight="SemiBold" 
+                                  Foreground="#4FC3F7"/>
+                    </DataTemplate>
+                </GroupBox.HeaderTemplate>
+                
+                <Border Background="#2A2A2A" CornerRadius="4" BorderBrush="#555555" BorderThickness="1" Margin="15">
+                    <StackPanel Margin="15">
+                        <DockPanel Margin="0,0,0,8">
+                            <TextBlock Text="●" 
+                                      FontSize="16" 
+                                      Foreground="#22C55E" 
+                                      DockPanel.Dock="Left"
+                                      VerticalAlignment="Center"/>
+                            <TextBlock Name="StatusText"
+                                      Text="Ready - Save Tracker is active and monitoring"
+                                      FontSize="14"
+                                      Foreground="#FFFFFF"
+                                      Margin="10,0,0,0"
+                                      VerticalAlignment="Center"/>
+                        </DockPanel>
+                        <TextBlock Name="LastOperationText"
+                                  Text="Last operation: None"
+                                  FontSize="12"
+                                  Foreground="#CCCCCC"/>
+                    </StackPanel>
+                </Border>
+            </GroupBox>
+
+            <!-- Save Section -->
+            <GroupBox Header="Save" 
+                      Style="{StaticResource DarkGroupBoxStyle}"
+                      Margin="0,0,0,20">
+                <GroupBox.HeaderTemplate>
+                    <DataTemplate>
+                        <TextBlock Text="{Binding}" 
+                                   FontSize="16" 
+                                   FontWeight="SemiBold" 
+                                   Foreground="#4FC3F7"/>
+                    </DataTemplate>
+                </GroupBox.HeaderTemplate>
+                
+                <Border Background="#2A2A2A" CornerRadius="4" BorderBrush="#555555" BorderThickness="1" Margin="15">
+                    <StackPanel Margin="15">
+                        <DockPanel Margin="0,0,0,8">
+                            
+                            <TextBlock Name="Save"
+                                       Text="Save Settings"
+                                       FontSize="14"
+                                       Foreground="#FFFFFF"
+                                       Margin="10,0,0,0"
+                                       VerticalAlignment="Center"/>
+                            <Button Name="SaveBTN"
+                                       Content="Save Settings"
+                                       Click="SaveBTN_OnClick"
+                                       FontSize="14"
+                                       Foreground="#FFFFFF"
+                                       Margin="10,0,0,0"
+                                       VerticalAlignment="Center"/>
+                        </DockPanel>
+                        
+                    </StackPanel>
+                </Border>
+            </GroupBox>
+
+            <!-- Info Section -->
+            <Border Background="#2D2A1F" 
+                    CornerRadius="6" 
+                    BorderBrush="#8B7355" 
+                    BorderThickness="1">
+                <StackPanel Margin="20,15">
+                    <StackPanel Orientation="Horizontal" Margin="0,0,0,10">
+                        <TextBlock Text="💡" FontSize="16" VerticalAlignment="Center"/>
+                        <TextBlock Text="How it works" 
+                                  FontSize="14" 
+                                  FontWeight="SemiBold" 
+                                  Foreground="#F4E4BC"
+                                  Margin="10,0,0,0"
+                                  VerticalAlignment="Center"/>
+                    </StackPanel>
+                    <TextBlock Text="Save Tracker automatically monitors your games and detects save file changes. When you stop playing, it can upload your saves to cloud storage. Use the download feature to restore saves on other devices."
+                              FontSize="12"
+                              Foreground="#E6D7B8"
+                              TextWrapping="Wrap"
+                              LineHeight="18"/>
+                </StackPanel>
+            </Border>
+        </StackPanel>
+    </ScrollViewer>
+</UserControl>
