@@ -40,7 +40,186 @@
                 </Setter.Value>
             </Setter>
         </Style>
+         <!-- Dark ComboBox Style -->
+    <Style x:Key="DarkComboBoxStyle" TargetType="{x:Type ComboBox}">
+        <Setter Property="Background" Value="#FF3C3C3C"/>
+        <Setter Property="BorderBrush" Value="#FF555555"/>
+        <Setter Property="Foreground" Value="White"/>
+        <Setter Property="BorderThickness" Value="1"/>
+        <Setter Property="ScrollViewer.CanContentScroll" Value="true"/>
+        <Setter Property="ScrollViewer.PanningMode" Value="Both"/>
+        <Setter Property="Stylus.IsFlicksEnabled" Value="False"/>
+        <Setter Property="Height" Value="30"/>
+        <Setter Property="Padding" Value="8,4"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type ComboBox}">
+                    <Grid x:Name="templateRoot" SnapsToDevicePixels="true">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition MinWidth="{DynamicResource {x:Static SystemParameters.VerticalScrollBarWidthKey}}" Width="0"/>
+                        </Grid.ColumnDefinitions>
+                        
+                        <!-- Main Border -->
+                        <Border x:Name="PART_Border" 
+                                Background="{TemplateBinding Background}" 
+                                BorderBrush="{TemplateBinding BorderBrush}" 
+                                BorderThickness="{TemplateBinding BorderThickness}" 
+                                Grid.ColumnSpan="2"
+                                CornerRadius="4"/>
+                        
+                        <!-- Content Presenter -->
+                        <ContentPresenter x:Name="contentPresenter" 
+                                        ContentTemplate="{TemplateBinding SelectionBoxItemTemplate}" 
+                                        Content="{TemplateBinding SelectionBoxItem}" 
+                                        ContentTemplateSelector="{TemplateBinding ItemTemplateSelector}" 
+                                        HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" 
+                                        IsHitTestVisible="false" 
+                                        Margin="{TemplateBinding Padding}" 
+                                        SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" 
+                                        VerticalAlignment="{TemplateBinding VerticalContentAlignment}"/>
+                        
+                        <!-- Dropdown Button -->
+                        <ToggleButton x:Name="toggleButton" 
+                                    Background="Transparent" 
+                                    BorderBrush="Transparent" 
+                                    BorderThickness="0" 
+                                    Grid.Column="1" 
+                                    IsChecked="{Binding IsDropDownOpen, Mode=TwoWay, RelativeSource={RelativeSource TemplatedParent}}" 
+                                    Style="{StaticResource ComboBoxReadonlyToggleButton}"/>
+                        
+                        <!-- Dropdown Arrow -->
+                        <Path x:Name="arrow" 
+                              Data="M 0 2 L 4 6 L 8 2 Z" 
+                              Fill="White" 
+                              HorizontalAlignment="Right" 
+                              Margin="0,0,10,0" 
+                              VerticalAlignment="Center" 
+                              Grid.Column="1"/>
+                        
+                        <!-- Popup -->
+                        <Popup x:Name="PART_Popup" 
+                               AllowsTransparency="true" 
+                               Grid.ColumnSpan="2" 
+                               IsOpen="{Binding IsDropDownOpen, Source={x:Reference Name=toggleButton}}" 
+                               Margin="1" 
+                               PopupAnimation="{DynamicResource {x:Static SystemParameters.ComboBoxPopupAnimationKey}}" 
+                               Placement="Bottom">
+                            
+                            <Border x:Name="dropDownBorder" 
+                                    Background="#FF2D2C2C" 
+                                    BorderBrush="#FF555555" 
+                                    BorderThickness="1"
+                                    CornerRadius="4"
+                                    MinWidth="{Binding ActualWidth, ElementName=templateRoot}" 
+                                    MaxHeight="{TemplateBinding MaxDropDownHeight}">
+                                
+                                <ScrollViewer x:Name="DropDownScrollViewer">
+                                    <Grid x:Name="grid" RenderOptions.ClearTypeHint="Enabled">
+                                        <Canvas x:Name="canvas" HorizontalAlignment="Left" Height="0" VerticalAlignment="Top" Width="0">
+                                            <Rectangle x:Name="opaqueRect" 
+                                                     Fill="{Binding Background, ElementName=dropDownBorder}" 
+                                                     Height="{Binding ActualHeight, ElementName=dropDownBorder}" 
+                                                     Width="{Binding ActualWidth, ElementName=dropDownBorder}"/>
+                                        </Canvas>
+                                        <ItemsPresenter x:Name="ItemsPresenter" 
+                                                      KeyboardNavigation.DirectionalNavigation="Contained" 
+                                                      SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"/>
+                                    </Grid>
+                                </ScrollViewer>
+                            </Border>
+                        </Popup>
+                    </Grid>
+                    
+                    <!-- Triggers for different states -->
+                    <ControlTemplate.Triggers>
+                        <!-- Mouse Over -->
+                        <Trigger Property="IsMouseOver" Value="true">
+                            <Setter Property="Background" TargetName="PART_Border" Value="#FF4A4A4A"/>
+                            <Setter Property="BorderBrush" TargetName="PART_Border" Value="#FF777777"/>
+                        </Trigger>
+                        
+                        <!-- Focused -->
+                        <Trigger Property="IsFocused" Value="true">
+                            <Setter Property="BorderBrush" TargetName="PART_Border" Value="#FF0078D4"/>
+                        </Trigger>
+                        
+                        <!-- Disabled -->
+                        <Trigger Property="IsEnabled" Value="false">
+                            <Setter Property="Background" TargetName="PART_Border" Value="#FF2A2A2A"/>
+                            <Setter Property="BorderBrush" TargetName="PART_Border" Value="#FF333333"/>
+                            <Setter Property="Foreground" Value="#FF666666"/>
+                            <Setter Property="Fill" TargetName="arrow" Value="#FF666666"/>
+                        </Trigger>
+                        
+                        <!-- Dropdown Open -->
+                        <Trigger Property="IsDropDownOpen" Value="true">
+                            <Setter Property="BorderBrush" TargetName="PART_Border" Value="#FF0078D4"/>
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
 
+    <!-- Toggle Button Style for ComboBox -->
+    <Style x:Key="ComboBoxReadonlyToggleButton" TargetType="{x:Type ToggleButton}">
+        <Setter Property="OverridesDefaultStyle" Value="true"/>
+        <Setter Property="IsTabStop" Value="false"/>
+        <Setter Property="Focusable" Value="false"/>
+        <Setter Property="ClickMode" Value="Press"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type ToggleButton}">
+                    <Border x:Name="templateRoot" 
+                            Background="Transparent" 
+                            BorderBrush="Transparent" 
+                            BorderThickness="0" 
+                            SnapsToDevicePixels="true">
+                    </Border>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <!-- Dark ComboBoxItem Style -->
+    <Style x:Key="DarkComboBoxItemStyle" TargetType="{x:Type ComboBoxItem}">
+        <Setter Property="Background" Value="Transparent"/>
+        <Setter Property="Foreground" Value="White"/>
+        <Setter Property="Padding" Value="8,4"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type ComboBoxItem}">
+                    <Border x:Name="Bd" 
+                            Background="{TemplateBinding Background}" 
+                            BorderBrush="{TemplateBinding BorderBrush}" 
+                            BorderThickness="{TemplateBinding BorderThickness}" 
+                            Padding="{TemplateBinding Padding}" 
+                            SnapsToDevicePixels="true">
+                        <ContentPresenter HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" 
+                                        SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" 
+                                        VerticalAlignment="{TemplateBinding VerticalContentAlignment}"/>
+                    </Border>
+                    <ControlTemplate.Triggers>
+                        <!-- Mouse Over -->
+                        <Trigger Property="IsMouseOver" Value="true">
+                            <Setter Property="Background" TargetName="Bd" Value="#FF404040"/>
+                        </Trigger>
+                        
+                        <!-- Selected -->
+                        <Trigger Property="IsSelected" Value="true">
+                            <Setter Property="Background" TargetName="Bd" Value="#FF0078D4"/>
+                        </Trigger>
+                        
+                        <!-- Disabled -->
+                        <Trigger Property="IsEnabled" Value="false">
+                            <Setter Property="Foreground" Value="#FF666666"/>
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
         <!-- Orange Button Style for Download -->
         <Style x:Key="OrangeButtonStyle" TargetType="Button" BasedOn="{StaticResource DarkButtonStyle}">
             <Setter Property="Background" Value="#CC7A00"/>
@@ -99,6 +278,7 @@
 
     <ScrollViewer VerticalScrollBarVisibility="Auto" Background="Transparent">
         <StackPanel Margin="20">
+            
             <!-- Header -->
             <Border Background="#0E639C" CornerRadius="6" Margin="0,0,0,20">
                 <StackPanel Margin="20,15">
@@ -112,6 +292,58 @@
                               Foreground="#E6F3FF"/>
                 </StackPanel>
             </Border>
+            
+            
+             <!-- Settings Section -->
+            <GroupBox Header="Provider Settings" 
+                     Style="{StaticResource DarkGroupBoxStyle}"
+                     Margin="0,0,0,20">
+                <GroupBox.HeaderTemplate>
+                    <DataTemplate>
+                        <TextBlock Text="{Binding}" 
+                                  FontSize="16" 
+                                  FontWeight="SemiBold" 
+                                  Foreground="#4FC3F7"/>
+                    </DataTemplate>
+                </GroupBox.HeaderTemplate>
+                
+                <StackPanel Margin="15">
+                    <!-- Console Setting -->
+                    <Border Background="#3C3C3C" CornerRadius="4" BorderBrush="#555555" BorderThickness="1">
+                        <StackPanel Margin="15">
+                            <DockPanel>
+                                <TextBlock Text="Provider Selector: " 
+                                           FontSize="14" 
+                                           FontWeight="Medium"
+                                           Foreground="#FFFFFF"
+                                           Margin="10,0,0,0"
+                                           VerticalAlignment="Center"/>
+                                <ComboBox SelectedIndex="{Binding Settings.SelectedProviderIndex}" Margin="10,0,0,0" Height="30">
+                                    <ComboBoxItem Content="Google Drive (15GB Free)"/>        <!-- 0 -->
+                                    <ComboBoxItem Content="OneDrive (5GB Free)"/>             <!-- 1 -->
+                                    <ComboBoxItem Content="Dropbox (2GB Free)"/>              <!-- 2 -->
+                                    <ComboBoxItem Content="pCloud (10GB Free)"/>              <!-- 3 -->
+                                    <ComboBoxItem Content="Box (10GB Free)"/>                 <!-- 5 -->
+                                    <ComboBoxItem Content="Amazon Drive (Premium)"/>          <!-- 16 -->
+                                    <ComboBoxItem Content="Yandex (10GB Free)"/>              <!-- 17 -->
+                                    <ComboBoxItem Content="Put.io (Premium)"/>                <!-- 19 -->
+                                    <ComboBoxItem Content="HiDrive (5GB Free)"/>              <!-- 21 -->
+                                    <ComboBoxItem Content="Uptobox (Premium)"/>               <!-- 22 -->
+                                </ComboBox>
+
+                               
+                            </DockPanel>
+                            <TextBlock Text="Choose your preferred cloud storage provider. This selection will be used to sync or back up your game save data to the selected service."
+                                       FontSize="12"
+                                       Foreground="#CCCCCC"
+                                       Margin="25,8,0,0"
+                                       
+                                       TextWrapping="Wrap"/>
+                        </StackPanel>
+                    </Border>
+
+                </StackPanel>
+            </GroupBox>
 
             <!-- Settings Section -->
             <GroupBox Header="General Settings" 
@@ -351,42 +583,6 @@
                 </Grid>
             </GroupBox>
 
-            <!-- Status Section -->
-            <GroupBox Header="Status" 
-                     Style="{StaticResource DarkGroupBoxStyle}"
-                     Margin="0,0,0,20">
-                <GroupBox.HeaderTemplate>
-                    <DataTemplate>
-                        <TextBlock Text="{Binding}" 
-                                  FontSize="16" 
-                                  FontWeight="SemiBold" 
-                                  Foreground="#4FC3F7"/>
-                    </DataTemplate>
-                </GroupBox.HeaderTemplate>
-                
-                <Border Background="#2A2A2A" CornerRadius="4" BorderBrush="#555555" BorderThickness="1" Margin="15">
-                    <StackPanel Margin="15">
-                        <DockPanel Margin="0,0,0,8">
-                            <TextBlock Text="●" 
-                                      FontSize="16" 
-                                      Foreground="#22C55E" 
-                                      DockPanel.Dock="Left"
-                                      VerticalAlignment="Center"/>
-                            <TextBlock Name="StatusText"
-                                      Text="Ready - Save Tracker is active and monitoring"
-                                      FontSize="14"
-                                      Foreground="#FFFFFF"
-                                      Margin="10,0,0,0"
-                                      VerticalAlignment="Center"/>
-                        </DockPanel>
-                        <TextBlock Name="LastOperationText"
-                                  Text="Last operation: None"
-                                  FontSize="12"
-                                  Foreground="#CCCCCC"/>
-                    </StackPanel>
-                </Border>
-            </GroupBox>
-
             <!-- Save Section -->
             <GroupBox Header="Save" 
                       Style="{StaticResource DarkGroupBoxStyle}"
@@ -410,7 +606,7 @@
                                        Foreground="#FFFFFF"
                                        Margin="10,0,0,0"
                                        VerticalAlignment="Center"/>
-                            <Button Name="SaveBTN"
+                            <Button Name="SaveBtn"
                                        Content="Save Settings"
                                        Click="SaveBTN_OnClick"
                                        FontSize="14"

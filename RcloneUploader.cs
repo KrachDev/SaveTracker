@@ -6,74 +6,487 @@ using System.IO.Compression;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
-using System.Text.Json;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using Playnite.SDK;
 using JsonException = Newtonsoft.Json.JsonException;
-
 namespace SaveTracker
 {
     public class RcloneUploader
     {
-        public static string RcloneExePath => Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "ExtraTools", "rclone.exe");
-        private static readonly string ToolsPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "ExtraTools");
-        private static readonly string ConfigPath = Path.Combine(ToolsPath, "rclone.conf");
-        private static readonly int MaxRetries = 3;
-        private static readonly TimeSpan RetryDelay = TimeSpan.FromSeconds(2);
-        private static readonly TimeSpan ProcessTimeout = TimeSpan.FromMinutes(10);
+        public string RcloneExePath => Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "ExtraTools", "rclone.exe");
+        private static  string ToolsPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "ExtraTools");
+        private  string ConfigPath = Path.Combine(ToolsPath, "rclone.conf");
+        private readonly int MaxRetries = 3;
+        private  readonly TimeSpan RetryDelay = TimeSpan.FromSeconds(2);
+        private  readonly TimeSpan ProcessTimeout = TimeSpan.FromMinutes(10);
+        public  SaveTrackerSettingsViewModel  UploaderSettings { get; set; }
 
-        public static async Task<string> GetLatestRcloneZipUrl()
+private string GetProviderType(CloudProvider provider)
+{
+    return provider switch
+    {
+        CloudProvider.GoogleDrive => "drive",
+        CloudProvider.OneDrive => "onedrive",
+        CloudProvider.Dropbox => "dropbox",
+        CloudProvider.Pcloud => "pcloud",
+        CloudProvider.Box => "box", 
+        CloudProvider.AmazonDrive => "amazonclouddrive",
+        CloudProvider.Yandex => "yandex",
+        CloudProvider.PutIO => "putio",
+        CloudProvider.HiDrive => "hidrive",
+        CloudProvider.Uptobox => "uptobox",
+        _ => throw new ArgumentException($"Unsupported provider: {provider}")
+    };
+}
+
+private string GetProviderConfigName(CloudProvider provider)
+{
+    return provider switch
+    {
+        CloudProvider.GoogleDrive => "gdrive",
+        CloudProvider.OneDrive => "onedrive",
+        CloudProvider.Dropbox => "dropbox",
+        CloudProvider.Pcloud => "pcloud",
+        CloudProvider.Box => "box",
+        CloudProvider.AmazonDrive => "amazondrive",
+        CloudProvider.Yandex => "yandex",
+        CloudProvider.PutIO => "putio",
+        CloudProvider.HiDrive => "hidrive",
+        CloudProvider.Uptobox => "uptobox",
+        _ => throw new ArgumentException($"Unsupported provider: {provider}")
+    };
+}
+
+private string GetProviderConfigType(CloudProvider provider)
+{
+    return provider switch
+    {
+        CloudProvider.GoogleDrive => "drive",
+        CloudProvider.OneDrive => "onedrive",
+        CloudProvider.Dropbox => "dropbox",
+        CloudProvider.Pcloud => "pcloud",
+        CloudProvider.Box => "box",
+        CloudProvider.AmazonDrive => "amazonclouddrive",
+        CloudProvider.Yandex => "yandex",
+        CloudProvider.PutIO => "putio",
+        CloudProvider.HiDrive => "hidrive",
+        CloudProvider.Uptobox => "uptobox",
+        _ => throw new ArgumentException($"Unsupported provider: {provider}")
+    };
+}
+
+private bool RequiresTokenValidation(CloudProvider provider)
+{
+    return provider switch
+    {
+        CloudProvider.GoogleDrive => true,
+        CloudProvider.OneDrive => true,
+        CloudProvider.Dropbox => true,
+        CloudProvider.Pcloud => true,
+        CloudProvider.Box => true,
+        CloudProvider.AmazonDrive => true,
+        CloudProvider.Yandex => true,
+        CloudProvider.PutIO => true,
+        CloudProvider.HiDrive => true,
+        CloudProvider.Uptobox => true,
+        _ => false
+    };
+}
+// Method to check if provider uses username/password
+
+
+
+private string GetProviderDisplayName(CloudProvider provider)
+{
+    return provider switch
+    {
+        CloudProvider.GoogleDrive => "Google Drive",
+        CloudProvider.OneDrive => "OneDrive",
+        CloudProvider.Dropbox => "Dropbox",
+        CloudProvider.Pcloud => "pCloud",
+        CloudProvider.Box => "Box",
+        CloudProvider.AmazonDrive => "Amazon Drive",
+        CloudProvider.Yandex => "Yandex Disk",
+        CloudProvider.PutIO => "Put.io",
+        CloudProvider.HiDrive => "HiDrive",
+        CloudProvider.Uptobox => "Uptobox",
+        _ => throw new ArgumentException($"Unsupported provider: {provider}")
+    };
+}
+// Modified IsValidConfig method
+private  async Task<bool> IsValidConfig(string path, CloudProvider provider)
+{
+    string providerName = GetProviderConfigName(provider);
+    string providerType = GetProviderConfigType(provider);
+    string displayName = GetProviderDisplayName(provider);
+    
+    DebugConsole.WriteInfo($"Validating {displayName} config file: {path}");
+    
+    try
+    {
+        if (!File.Exists(path))
         {
-            DebugConsole.WriteSection("Getting Latest Rclone URL");
-            
+            DebugConsole.WriteWarning("Config file does not exist");
+            return false;
+        }
+
+        string content = File.ReadAllText(path);
+        DebugConsole.WriteDebug($"Config file size: {content.Length} characters");
+
+        // Check for provider-specific section
+        string sectionName = $"[{providerName}]";
+        if (!content.Contains(sectionName))
+        {
+            DebugConsole.WriteWarning($"Config missing {sectionName} section");
+            return false;
+        }
+
+        // Check for provider-specific type
+        string typeString = $"type = {providerType}";
+        if (!content.Contains(typeString))
+        {
+            DebugConsole.WriteWarning($"Config missing '{typeString}' setting");
+            return false;
+        }
+
+        // Token validation (if required by provider)
+        if (RequiresTokenValidation(provider))
+        {
+            var tokenMatch = Regex.Match(content, @"token\s*=\s*(.+)");
+            if (!tokenMatch.Success)
+            {
+                DebugConsole.WriteWarning("Config missing or invalid token");
+                return false;
+            }
+
             try
             {
-                using var client = new HttpClient();
-                client.DefaultRequestHeaders.UserAgent.ParseAdd("SaveTracker-Rclone-Updater/1.0");
-                client.Timeout = TimeSpan.FromSeconds(30);
-
-                DebugConsole.WriteInfo("Fetching GitHub releases API...");
-                var json = await client.GetStringAsync("https://api.github.com/repos/rclone/rclone/releases/latest");
-
-                using var doc = JsonDocument.Parse(json);
-                var root = doc.RootElement;
-
-                var version = root.GetProperty("tag_name").GetString();
-                DebugConsole.WriteInfo($"Latest version found: {version}");
-
-                foreach (var asset in root.GetProperty("assets").EnumerateArray())
-                {
-                    var name = asset.GetProperty("name").GetString();
-                    if (name != null && name.Contains("windows-amd64.zip"))
-                    {
-                        var url = asset.GetProperty("browser_download_url").GetString();
-                        DebugConsole.WriteSuccess($"Found download URL: {url}");
-                        return url;
-                    }
-                }
-
-                DebugConsole.WriteError("No windows-amd64.zip asset found in release");
-                return null;
+                JsonConvert.DeserializeObject(tokenMatch.Groups[1].Value.Trim());
+                DebugConsole.WriteSuccess($"{displayName} config validation passed");
+                return true;
             }
-            catch (Exception ex)
+            catch (JsonException)
             {
-                DebugConsole.WriteException(ex, "Failed to get latest Rclone URL");
-                return null;
+                DebugConsole.WriteWarning("Config token is not valid JSON");
+                return false;
+            }
+        }
+        else
+        {
+            DebugConsole.WriteSuccess($"{displayName} config validation passed");
+            return true;
+        }
+    }
+    catch (Exception ex)
+    {
+        DebugConsole.WriteException(ex, "Config validation failed");
+        return false;
+    }
+}
+
+// Modified CreateConfig method
+private  async Task CreateConfig(IPlayniteAPI api, CloudProvider provider)
+{
+    string providerName = GetProviderConfigName(provider);
+    string providerType = GetProviderType(provider);
+    string displayName = GetProviderDisplayName(provider);
+    
+    DebugConsole.WriteSection($"Creating {displayName} Config");
+    
+    try
+    { 
+         if (File.Exists(ConfigPath))
+            {
+                string backupPath = $"{ConfigPath}.backup_{DateTime.Now:yyyyMMdd_HHmmss}";
+                File.Move(ConfigPath, backupPath);
+                DebugConsole.WriteInfo($"Backed up existing config to: {backupPath}");
+            }
+
+            var result = await ExecuteRcloneCommand($"config create {providerName} {providerType} --config \"{ConfigPath}\"", TimeSpan.FromMinutes(5), false);
+
+            if (result.Success && await IsValidConfig(ConfigPath, provider))
+            {
+                DebugConsole.WriteSuccess($"{displayName} configuration completed successfully");
+                api.Notifications.Add(new NotificationMessage("RCLONE_CONFIG_OK", $"{displayName} is configured.", NotificationType.Info));
+            }
+            else
+            {
+                string errorMsg = $"Rclone config failed. Exit code: {result.ExitCode}, Error: {result.Error}";
+                DebugConsole.WriteError(errorMsg);
+                throw new Exception(errorMsg);
+            }
+        
+       
+    }
+    catch (Exception ex)
+    {
+        DebugConsole.WriteException(ex, "Config creation failed");
+        throw;
+    }
+}
+
+// Modified TestConnection method
+private  async Task TestConnection(IPlayniteAPI api, CloudProvider provider)
+{
+    string providerName = GetProviderConfigName(provider);
+    string displayName = GetProviderDisplayName(provider);
+    
+    DebugConsole.WriteInfo($"Testing {displayName} connection...");
+    
+    try
+    {
+        var result = await ExecuteRcloneCommand($"lsd {providerName}: --max-depth 1 --config \"{ConfigPath}\"", TimeSpan.FromSeconds(30));
+        
+        if (result.Success)
+        {
+            DebugConsole.WriteSuccess($"{displayName} connection test passed");
+        }
+        else
+        {
+            DebugConsole.WriteWarning($"Connection test failed: {result.Error}");
+            api.Notifications.Add(new NotificationMessage("RCLONE_CONNECTION_WARNING", 
+                $"Rclone configured but {displayName} connection test failed. Upload may not work properly.", 
+                NotificationType.Error));
+        }
+    }
+    catch (Exception ex)
+    {
+        DebugConsole.WriteException(ex, "Connection test error");
+    }
+}
+
+// Modified Upload method
+public async Task Upload(List<string> SaveFilesList, IPlayniteAPI PlayniteApi, string gameName, CloudProvider provider)
+{
+   await DebugConsole.UploadIconChanager(SaveTracker.cloudIcon, 5);
+    await RcloneCheckAsync(PlayniteApi);
+    var overallStartTime = DateTime.Now;
+    string providerName = GetProviderConfigName(provider);
+    string displayName = GetProviderDisplayName(provider);
+    
+    DebugConsole.WriteSection($"Upload Process for {gameName} to {displayName}");
+    DebugConsole.WriteKeyValue("Process started at", overallStartTime.ToString("yyyy-MM-dd HH:mm:ss.fff"));
+    DebugConsole.WriteKeyValue("Files to process", SaveFilesList.Count);
+    DebugConsole.WriteKeyValue("Cloud provider", displayName);
+    DebugConsole.WriteList("Save files", SaveFilesList.Select(Path.GetFileName));
+
+    if (!File.Exists(RcloneExePath) || !File.Exists(ConfigPath))
+    {
+        string error = "Rclone is not installed or configured.";
+        DebugConsole.WriteError(error);
+        PlayniteApi.Notifications.Add(new NotificationMessage("RCLONE_MISSING", error, NotificationType.Error));
+        await DebugConsole.UploadIconChanager(SaveTracker.cloudIcon, 3);
+
+        return;
+    }
+
+    string remoteBasePath = $"{providerName}:PlayniteCloudSave/{SanitizeGameName(gameName)}";
+    DebugConsole.WriteKeyValue("Remote base path", remoteBasePath);
+
+    var stats = new UploadStats { StartTime = overallStartTime };
+    var validFiles = SaveFilesList.Where(File.Exists).ToList();
+    var invalidFiles = SaveFilesList.Except(validFiles).ToList();
+
+    if (invalidFiles.Any())
+    {
+        DebugConsole.WriteWarning($"Skipping {invalidFiles.Count} missing files:");
+        DebugConsole.WriteList("Missing files", invalidFiles.Select(Path.GetFileName));
+    }
+    await DebugConsole.UploadIconChanager(SaveTracker.cloudIcon, 1);
+
+    PlayniteApi.Dialogs.ActivateGlobalProgress(async (prog) =>
+    {
+        prog.ProgressMaxValue = validFiles.Count;
+        prog.CurrentProgressValue = 0;
+        prog.Text = $"Processing save files for {gameName} ({displayName})...";
+
+        foreach (var file in validFiles)
+        {
+            await ProcessFile(file, remoteBasePath, prog, stats);
+            prog.CurrentProgressValue++;
+        }
+
+        var overallEndTime = DateTime.Now;
+        stats.TotalTime = overallEndTime - overallStartTime;
+        DebugConsole.WriteKeyValue("Process completed at", overallEndTime.ToString("yyyy-MM-dd HH:mm:ss.fff"));
+
+        ShowUploadResults(PlayniteApi, gameName, stats, displayName);
+
+    }, new GlobalProgressOptions($"Uploading {gameName} saves to {displayName}", true));
+    await DebugConsole.UploadIconChanager(SaveTracker.cloudIcon, 4);
+
+}
+
+// Modified Download method
+public async Task<DownloadResult> Download(string gameName, string localDownloadPath, IPlayniteAPI PlayniteApi, CloudProvider provider, bool overwriteExisting = false)
+{
+    await DebugConsole.UploadIconChanager(SaveTracker.cloudIcon, 5);
+
+    await RcloneCheckAsync(PlayniteApi);
+
+    var overallStartTime = DateTime.Now;
+    string providerName = GetProviderConfigName(provider);
+    string displayName = GetProviderDisplayName(provider);
+    
+    DebugConsole.WriteSection($"Download Process for {gameName} from {displayName}");
+    DebugConsole.WriteKeyValue("Process started at", overallStartTime.ToString("yyyy-MM-dd HH:mm:ss.fff"));
+    DebugConsole.WriteKeyValue("Local download path", localDownloadPath);
+    DebugConsole.WriteKeyValue("Cloud provider", displayName);
+    DebugConsole.WriteKeyValue("Overwrite existing", overwriteExisting);
+
+    if (!File.Exists(RcloneExePath) || !File.Exists(ConfigPath))
+    {
+        string error = "Rclone is not installed or configured.";
+        DebugConsole.WriteError(error);
+        PlayniteApi.Notifications.Add(new NotificationMessage("RCLONE_MISSING", error, NotificationType.Error));
+        await DebugConsole.UploadIconChanager(SaveTracker.cloudIcon, 3);
+
+        return new DownloadResult { Success = false, Error = error };
+    }
+
+    string remoteBasePath = $"{providerName}:PlayniteCloudSave/{SanitizeGameName(gameName)}";
+    DebugConsole.WriteKeyValue("Remote base path", remoteBasePath);
+
+    var downloadResult = new DownloadResult { StartTime = overallStartTime };
+
+    try
+    {
+        // Ensure local download directory exists
+        if (!Directory.Exists(localDownloadPath))
+        {
+            Directory.CreateDirectory(localDownloadPath);
+            DebugConsole.WriteInfo($"Created local download directory: {localDownloadPath}");
+        }
+
+        // Get list of remote files
+        var remoteFiles = await GetRemoteFileList(remoteBasePath);
+        if (!remoteFiles.Any())
+        {
+            string message = $"No save files found for {gameName} in {displayName} storage.";
+            DebugConsole.WriteWarning(message);
+            downloadResult.Success = false;
+            downloadResult.Error = message;
+            await DebugConsole.UploadIconChanager(SaveTracker.cloudIcon, 3);
+
+            return downloadResult;
+        }
+
+        DebugConsole.WriteInfo($"Found {remoteFiles.Count} files in {displayName} storage:");
+        DebugConsole.WriteList("Remote files", remoteFiles.Select(f => f.Name));
+        await DebugConsole.UploadIconChanager(SaveTracker.cloudIcon, 2);
+
+        PlayniteApi.Dialogs.ActivateGlobalProgress(async (prog) =>
+        {
+            prog.ProgressMaxValue = remoteFiles.Count;
+            prog.CurrentProgressValue = 0;
+            prog.Text = $"Downloading save files for {gameName} from {displayName}...";
+
+            foreach (var remoteFile in remoteFiles)
+            {
+                await ProcessDownloadFile(remoteFile, localDownloadPath, remoteBasePath, prog, downloadResult, overwriteExisting);
+                prog.CurrentProgressValue++;
+            }
+
+            var overallEndTime = DateTime.Now;
+            downloadResult.TotalTime = overallEndTime - overallStartTime;
+            DebugConsole.WriteKeyValue("Process completed at", overallEndTime.ToString("yyyy-MM-dd HH:mm:ss.fff"));
+
+            ShowDownloadResults(PlayniteApi, gameName, downloadResult);
+
+        }, new GlobalProgressOptions($"Downloading {gameName} saves from {displayName}", true));
+        await DebugConsole.UploadIconChanager(SaveTracker.cloudIcon, 4);
+
+        downloadResult.Success = downloadResult.FailedCount == 0;
+    }
+    catch (Exception ex)
+    {
+        DebugConsole.WriteException(ex, "Download process failed");
+        downloadResult.Success = false;
+        downloadResult.Error = ex.Message;
+        PlayniteApi.Notifications.Add(new NotificationMessage("RCLONE_DOWNLOAD_ERROR", $"Error downloading {gameName} from {displayName}: {ex.Message}", NotificationType.Error));
+        await DebugConsole.UploadIconChanager(SaveTracker.cloudIcon, 3);
+
+    }
+
+    return downloadResult;
+}
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+public async Task<string> GetLatestRcloneZipUrl()
+{
+    DebugConsole.WriteSection("Getting Latest Rclone URL");
+
+    try
+    {
+        using var client = new HttpClient();
+        client.DefaultRequestHeaders.UserAgent.ParseAdd("SaveTracker-Rclone-Updater/1.0");
+        client.Timeout = TimeSpan.FromSeconds(30);
+
+        DebugConsole.WriteInfo("Fetching GitHub releases API...");
+        var json = await client.GetStringAsync("https://api.github.com/repos/rclone/rclone/releases/latest");
+
+        JObject root = JObject.Parse(json);
+
+        // Get tag_name
+        var version = root["tag_name"]?.ToString();
+        DebugConsole.WriteInfo($"Latest version found: {version}");
+
+        // Iterate assets array
+        var assets = root["assets"] as JArray;
+        if (assets != null)
+        {
+            foreach (var asset in assets)
+            {
+                var name = asset["name"]?.ToString();
+                if (name != null && name.Contains("windows-amd64.zip"))
+                {
+                    var url = asset["browser_download_url"]?.ToString();
+                    DebugConsole.WriteSuccess($"Found download URL: {url}");
+                    return url;
+                }
             }
         }
 
-        public static async Task RcloneCheckAsync(IPlayniteAPI api)
+        DebugConsole.WriteError("No windows-amd64.zip asset found in release");
+        return null;
+    }
+    catch (Exception ex)
+    {
+        DebugConsole.WriteException(ex, "Failed to get latest Rclone URL");
+        return null;
+    }
+}
+
+        public  async Task RcloneCheckAsync(IPlayniteAPI api)
         {
             DebugConsole.WriteSection("Rclone Setup Check");
-            
+    
             try
             {
+                // Safely get the selected provider
+               
+
                 DebugConsole.WriteKeyValue("Rclone Path", RcloneExePath);
                 DebugConsole.WriteKeyValue("Config Path", ConfigPath);
                 DebugConsole.WriteKeyValue("Tools Directory", ToolsPath);
+                DebugConsole.WriteKeyValue("Selected Provider", UploaderSettings.Settings.SelectedProviderIndex.ToString());
 
+                // Rest of the method using 'provider' instead of 'selectedProvider'
                 if (!File.Exists(RcloneExePath))
                 {
                     DebugConsole.WriteWarning("Rclone executable not found, initiating download...");
@@ -86,25 +499,26 @@ namespace SaveTracker
                     DebugConsole.WriteInfo($"Rclone version: {version}");
                 }
 
-                if (!File.Exists(ConfigPath) || !await IsValidConfig(ConfigPath))
+                if (!File.Exists(ConfigPath) || !await IsValidConfig(ConfigPath, (CloudProvider)UploaderSettings.Settings.SelectedProviderIndex))
                 {
                     DebugConsole.WriteWarning("Rclone config invalid or missing, setting up...");
-                    await CreateConfig(api);
+                    await CreateConfig(api, (CloudProvider)UploaderSettings.Settings.SelectedProviderIndex);
                 }
                 else
                 {
                     DebugConsole.WriteSuccess("Rclone configuration is valid");
-                    await TestConnection(api);
+                    await TestConnection(api, (CloudProvider)UploaderSettings.Settings.SelectedProviderIndex);
                 }
             }
             catch (Exception ex)
             {
                 DebugConsole.WriteException(ex, "Rclone setup failed");
+                await DebugConsole.UploadIconChanager(SaveTracker.cloudIcon, 3);
+
                 api.Notifications.Add(new NotificationMessage("RCLONE_ERROR", $"Error setting up Rclone: {ex.Message}", NotificationType.Error));
             }
         }
-
-        private static async Task DownloadAndInstallRclone(IPlayniteAPI api)
+        private  async Task DownloadAndInstallRclone(IPlayniteAPI api)
         {
             DebugConsole.WriteSection("Downloading Rclone");
             
@@ -156,7 +570,7 @@ namespace SaveTracker
             }
         }
 
-        private static async Task ExtractRclone(string zipPath)
+        private  async Task ExtractRclone(string zipPath)
         {
             DebugConsole.WriteInfo("Extracting Rclone archive...");
             
@@ -196,7 +610,7 @@ namespace SaveTracker
             }
         }
 
-        private static async Task<string> GetRcloneVersion()
+        private  async Task<string> GetRcloneVersion()
         {
             try
             {
@@ -215,169 +629,9 @@ namespace SaveTracker
             }
         }
 
-        private static async Task<bool> IsValidConfig(string path)
-        {
-            DebugConsole.WriteInfo($"Validating config file: {path}");
-            
-            try
-            {
-                if (!File.Exists(path))
-                {
-                    DebugConsole.WriteWarning("Config file does not exist");
-                    return false;
-                }
 
-                string content =  File.ReadAllText(path);
-                DebugConsole.WriteDebug($"Config file size: {content.Length} characters");
 
-                if (!content.Contains("[gdrive]"))
-                {
-                    DebugConsole.WriteWarning("Config missing [gdrive] section");
-                    return false;
-                }
 
-                if (!content.Contains("type = drive"))
-                {
-                    DebugConsole.WriteWarning("Config missing 'type = drive' setting");
-                    return false;
-                }
-
-                var tokenMatch = Regex.Match(content, @"token\s*=\s*(.+)");
-                if (!tokenMatch.Success)
-                {
-                    DebugConsole.WriteWarning("Config missing or invalid token");
-                    return false;
-                }
-
-                try
-                {
-                    JsonConvert.DeserializeObject(tokenMatch.Groups[1].Value.Trim());
-                    DebugConsole.WriteSuccess("Config validation passed");
-                    return true;
-                }
-                catch (JsonException)
-                {
-                    DebugConsole.WriteWarning("Config token is not valid JSON");
-                    return false;
-                }
-            }
-            catch (Exception ex)
-            {
-                DebugConsole.WriteException(ex, "Config validation failed");
-                return false;
-            }
-        }
-
-        private static async Task CreateConfig(IPlayniteAPI api)
-        {
-            DebugConsole.WriteSection("Creating Rclone Config");
-            
-            try
-            {
-                if (File.Exists(ConfigPath))
-                {
-                    string backupPath = $"{ConfigPath}.backup_{DateTime.Now:yyyyMMdd_HHmmss}";
-                    File.Move(ConfigPath, backupPath);
-                    DebugConsole.WriteInfo($"Backed up existing config to: {backupPath}");
-                }
-
-                var result = await ExecuteRcloneCommand($"config create gdrive drive --config \"{ConfigPath}\"", TimeSpan.FromMinutes(5), false);
-
-                if (result.Success && await IsValidConfig(ConfigPath))
-                {
-                    DebugConsole.WriteSuccess("Google Drive configuration completed successfully");
-                    api.Notifications.Add(new NotificationMessage("RCLONE_CONFIG_OK", "Google Drive is configured.", NotificationType.Info));
-                }
-                else
-                {
-                    string errorMsg = $"Rclone config failed. Exit code: {result.ExitCode}, Error: {result.Error}";
-                    DebugConsole.WriteError(errorMsg);
-                    throw new Exception(errorMsg);
-                }
-            }
-            catch (Exception ex)
-            {
-                DebugConsole.WriteException(ex, "Config creation failed");
-                throw;
-            }
-        }
-
-        private static async Task TestConnection(IPlayniteAPI api)
-        {
-            DebugConsole.WriteInfo("Testing Google Drive connection...");
-            
-            try
-            {
-                var result = await ExecuteRcloneCommand($"lsd gdrive: --max-depth 1 --config \"{ConfigPath}\"", TimeSpan.FromSeconds(30));
-                
-                if (result.Success)
-                {
-                    DebugConsole.WriteSuccess("Google Drive connection test passed");
-                }
-                else
-                {
-                    DebugConsole.WriteWarning($"Connection test failed: {result.Error}");
-                    api.Notifications.Add(new NotificationMessage("RCLONE_CONNECTION_WARNING", 
-                        "Rclone configured but connection test failed. Upload may not work properly.", 
-                        NotificationType.Error));
-                }
-            }
-            catch (Exception ex)
-            {
-                DebugConsole.WriteException(ex, "Connection test error");
-            }
-        }
-
-        public async Task Upload(List<string> SaveFilesList, IPlayniteAPI PlayniteApi, string gameName)
-        {
-            await RcloneCheckAsync(PlayniteApi);
-            var overallStartTime = DateTime.Now;
-            DebugConsole.WriteSection($"Upload Process for {gameName}");
-            DebugConsole.WriteKeyValue("Process started at", overallStartTime.ToString("yyyy-MM-dd HH:mm:ss.fff"));
-            DebugConsole.WriteKeyValue("Files to process", SaveFilesList.Count);
-            DebugConsole.WriteList("Save files", SaveFilesList.Select(Path.GetFileName));
-
-            if (!File.Exists(RcloneExePath) || !File.Exists(ConfigPath))
-            {
-                string error = "Rclone is not installed or configured.";
-                DebugConsole.WriteError(error);
-                PlayniteApi.Notifications.Add(new NotificationMessage("RCLONE_MISSING", error, NotificationType.Error));
-                return;
-            }
-
-            string remoteBasePath = $"gdrive:PlayniteCloudSave/{SanitizeGameName(gameName)}";
-            DebugConsole.WriteKeyValue("Remote base path", remoteBasePath);
-
-            var stats = new UploadStats { StartTime = overallStartTime };
-            var validFiles = SaveFilesList.Where(File.Exists).ToList();
-            var invalidFiles = SaveFilesList.Except(validFiles).ToList();
-
-            if (invalidFiles.Any())
-            {
-                DebugConsole.WriteWarning($"Skipping {invalidFiles.Count} missing files:");
-                DebugConsole.WriteList("Missing files", invalidFiles.Select(Path.GetFileName));
-            }
-
-             PlayniteApi.Dialogs.ActivateGlobalProgress(async (prog) =>
-            {
-                prog.ProgressMaxValue = validFiles.Count;
-                prog.CurrentProgressValue = 0;
-                prog.Text = $"Processing save files for {gameName}...";
-
-                foreach (var file in validFiles)
-                {
-                    await ProcessFile(file, remoteBasePath, prog, stats);
-                    prog.CurrentProgressValue++;
-                }
-
-                var overallEndTime = DateTime.Now;
-                stats.TotalTime = overallEndTime - overallStartTime;
-                DebugConsole.WriteKeyValue("Process completed at", overallEndTime.ToString("yyyy-MM-dd HH:mm:ss.fff"));
-
-                ShowUploadResults(PlayniteApi, gameName, stats);
-
-            }, new GlobalProgressOptions($"Uploading {gameName} saves", true));
-        }
 
         private async Task ProcessFile(string filePath, string remoteBasePath, GlobalProgressActionArgs prog, UploadStats stats)
         {
@@ -532,7 +786,7 @@ namespace SaveTracker
             }
         }
 
-        private static async Task<RcloneResult> ExecuteRcloneCommand(string arguments, TimeSpan timeout, bool hideWindow = true)
+        private  async Task<RcloneResult> ExecuteRcloneCommand(string arguments, TimeSpan timeout, bool hideWindow = true)
         {
             DebugConsole.WriteDebug($"Executing: rclone {arguments}");
             
@@ -594,7 +848,7 @@ namespace SaveTracker
             }
         }
 
-        private static string SanitizeGameName(string gameName)
+        private  string SanitizeGameName(string gameName)
         {
             if (string.IsNullOrWhiteSpace(gameName))
                 return "UnknownGame";
@@ -604,98 +858,21 @@ namespace SaveTracker
             return sanitized.Trim();
         }
 
-        private static void ShowUploadResults(IPlayniteAPI api, string gameName, UploadStats stats)
+        private  void ShowUploadResults(IPlayniteAPI api, string gameName, UploadStats stats, string displayName)
         {
             DebugConsole.WriteSection("Upload Results");
             DebugConsole.WriteKeyValue("Uploaded", $"{stats.UploadedCount} files ({stats.UploadedSize:N0} bytes)");
             DebugConsole.WriteKeyValue("Skipped", $"{stats.SkippedCount} files ({stats.SkippedSize:N0} bytes)");
             DebugConsole.WriteKeyValue("Failed", $"{stats.FailedCount} files");
-            
-            string message = $"Upload complete for {gameName}: " +
-                           $"{stats.UploadedCount} uploaded, {stats.SkippedCount} skipped, {stats.FailedCount} failed.";
-            
+    
+            // Use displayName instead of gameName for user-facing messages
+            string message = $"Upload complete for {displayName}: " +
+                             $"{stats.UploadedCount} uploaded, {stats.SkippedCount} skipped, {stats.FailedCount} failed.";
+    
             var notificationType = stats.FailedCount > 0 ? NotificationType.Error : NotificationType.Info;
-            
+    
             api.Notifications.Add(new NotificationMessage("RCLONE_UPLOAD_COMPLETE", message, notificationType));
         }
-public async Task<DownloadResult> Download(string gameName, string localDownloadPath, IPlayniteAPI PlayniteApi, bool overwriteExisting = false)
-{            await RcloneCheckAsync(PlayniteApi);
-
-    var overallStartTime = DateTime.Now;
-    DebugConsole.WriteSection($"Download Process for {gameName}");
-    DebugConsole.WriteKeyValue("Process started at", overallStartTime.ToString("yyyy-MM-dd HH:mm:ss.fff"));
-    DebugConsole.WriteKeyValue("Local download path", localDownloadPath);
-    DebugConsole.WriteKeyValue("Overwrite existing", overwriteExisting);
-
-    if (!File.Exists(RcloneExePath) || !File.Exists(ConfigPath))
-    {
-        string error = "Rclone is not installed or configured.";
-        DebugConsole.WriteError(error);
-        PlayniteApi.Notifications.Add(new NotificationMessage("RCLONE_MISSING", error, NotificationType.Error));
-        return new DownloadResult { Success = false, Error = error };
-    }
-
-    string remoteBasePath = $"gdrive:PlayniteCloudSave/{SanitizeGameName(gameName)}";
-    DebugConsole.WriteKeyValue("Remote base path", remoteBasePath);
-
-    var downloadResult = new DownloadResult { StartTime = overallStartTime };
-
-    try
-    {
-        // Ensure local download directory exists
-        if (!Directory.Exists(localDownloadPath))
-        {
-            Directory.CreateDirectory(localDownloadPath);
-            DebugConsole.WriteInfo($"Created local download directory: {localDownloadPath}");
-        }
-
-        // Get list of remote files
-        var remoteFiles = await GetRemoteFileList(remoteBasePath);
-        if (!remoteFiles.Any())
-        {
-            string message = $"No save files found for {gameName} in cloud storage.";
-            DebugConsole.WriteWarning(message);
-            downloadResult.Success = false;
-            downloadResult.Error = message;
-            return downloadResult;
-        }
-
-        DebugConsole.WriteInfo($"Found {remoteFiles.Count} files in cloud storage:");
-        DebugConsole.WriteList("Remote files", remoteFiles.Select(f => f.Name));
-
-         PlayniteApi.Dialogs.ActivateGlobalProgress(async (prog) =>
-        {
-            prog.ProgressMaxValue = remoteFiles.Count;
-            prog.CurrentProgressValue = 0;
-            prog.Text = $"Downloading save files for {gameName}...";
-
-            foreach (var remoteFile in remoteFiles)
-            {
-                await ProcessDownloadFile(remoteFile, localDownloadPath, remoteBasePath, prog, downloadResult, overwriteExisting);
-                prog.CurrentProgressValue++;
-            }
-
-            var overallEndTime = DateTime.Now;
-            downloadResult.TotalTime = overallEndTime - overallStartTime;
-            DebugConsole.WriteKeyValue("Process completed at", overallEndTime.ToString("yyyy-MM-dd HH:mm:ss.fff"));
-
-            ShowDownloadResults(PlayniteApi, gameName, downloadResult);
-
-        }, new GlobalProgressOptions($"Downloading {gameName} saves", true));
-
-        downloadResult.Success = downloadResult.FailedCount == 0;
-    }
-    catch (Exception ex)
-    {
-        DebugConsole.WriteException(ex, "Download process failed");
-        downloadResult.Success = false;
-        downloadResult.Error = ex.Message;
-        PlayniteApi.Notifications.Add(new NotificationMessage("RCLONE_DOWNLOAD_ERROR", $"Error downloading {gameName}: {ex.Message}", NotificationType.Error));
-    }
-
-    return downloadResult;
-}
-
 private async Task<List<RemoteFileInfo>> GetRemoteFileList(string remotePath)
 {
     DebugConsole.WriteInfo($"Getting remote file list from: {remotePath}");
@@ -866,7 +1043,7 @@ private async Task<bool> ShouldDownloadFile(string localFilePath, string remoteP
     }
 }
 
-private static void ShowDownloadResults(IPlayniteAPI api, string gameName, DownloadResult result)
+private  void ShowDownloadResults(IPlayniteAPI api, string gameName, DownloadResult result)
 {
     DebugConsole.WriteSection("Download Results");
     DebugConsole.WriteKeyValue("Downloaded", $"{result.DownloadedCount} files ({result.DownloadedSize:N0} bytes)");
@@ -944,4 +1121,18 @@ private class RcloneFileInfo
             public DateTime StartTime { get; set; }
         }
     }
+}
+
+public enum CloudProvider
+{
+    GoogleDrive = 0,
+    OneDrive = 1,
+    Dropbox = 2,
+    Pcloud = 3,
+    Box = 4,
+    AmazonDrive = 5,
+    Yandex = 6,
+    PutIO = 7,
+    HiDrive = 8,
+    Uptobox = 9
 }

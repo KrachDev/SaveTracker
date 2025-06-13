@@ -16,7 +16,22 @@ namespace SaveTracker
         private bool trackreads = false;
         private bool trackwrites = true;
         private bool optionThatWontBeSaved = false;
+        private CloudProvider selectedProvider = CloudProvider.GoogleDrive;
 
+        public CloudProvider SelectedProvider 
+        { 
+            get => selectedProvider; 
+            set => SetValue(ref selectedProvider, value); 
+        }
+        public int SelectedProviderIndex
+        {
+            get => (int)selectedProvider;
+            set 
+            { 
+                SelectedProvider = (CloudProvider)value;
+                OnPropertyChanged(); // or however you handle property change notifications
+            }
+        }
         public bool ShowCosnoleOption { get => showscosnoleoption; set => SetValue(ref showscosnoleoption, value); }
         public bool TrackWrites { get => trackwrites; set => SetValue(ref trackwrites, value); }
         public bool TrackReads { get => trackreads; set => SetValue(ref trackreads, value); }

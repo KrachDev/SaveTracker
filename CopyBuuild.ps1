@@ -7,7 +7,7 @@ if (-not ([Security.Principal.WindowsPrincipal] [Security.Principal.WindowsIdent
 }
 
 $playniteExe = "$env:LOCALAPPDATA\Playnite\Playnite.DesktopApp.exe"
-$buildOutput = "C:\Users\Krach\Documents\SaveTracker\SaveTracker\bin\Debug\*"
+$buildOutput = "C:\Users\Krach\RiderProjects\SaveTracker\bin\Debug*"
 $extensionDest = "$env:LOCALAPPDATA\Playnite\Extensions\SaveTracker"
 
 Write-Host "`n>> Stopping Playnite if running..."

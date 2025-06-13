@@ -4,10 +4,10 @@ using Playnite.SDK.Plugins;
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Text.Json;
-using System.Windows;
+using System.Threading.Tasks;
 using System.Windows.Controls;
-using System.Windows.Media.Imaging;
+using System.Windows.Media;
+using Newtonsoft.Json;
 
 namespace SaveTracker
 {
@@ -16,7 +16,8 @@ namespace SaveTracker
         private static SaveTrackerSettingsViewModel Settings { get; set; }
 
         public override Guid Id { get; } = Guid.Parse("ad1eece9-6f59-460a-a7db-0d5fe5255ebd");
-
+        public static CloudProvider selectedProvider;
+        public static System.Windows.Shapes.Path cloudIcon; 
         public TrackLogic trackLogic = new TrackLogic()
         {
             TrackerSettings = Settings,
@@ -30,35 +31,85 @@ namespace SaveTracker
             {
                 HasSettings = true
             };
-
+            selectedProvider =  (CloudProvider)Settings.Settings.SelectedProviderIndex;
+            rcloneUploader.UploaderSettings = Settings;
             // Enable debug console based on settings
             DebugConsole.Enable(Settings.Settings.ShowCosnoleOption);
             DebugConsole.WriteInfo("SaveTracker plugin initialized");
+            DebugConsole.WriteInfo($"Cloud Provider: {selectedProvider}");
+
         }
         // Add sidebar element
         public override IEnumerable<SidebarItem> GetSidebarItems()
         {
             DebugConsole.WriteInfo("GetSidebarItems called");
-    
+            // SVG path from IcoMoon
+            var svgPathData = "M512 328.771c0-41.045-28.339-75.45-66.498-84.74-1.621-64.35-54.229-116.031-118.931-116.031-37.896 0-71.633 17.747-93.427 45.366-12.221-15.799-31.345-25.98-52.854-25.98-36.905 0-66.821 29.937-66.821 66.861 0 3.218 0.24 6.38 0.682 9.477-5.611-1.012-11.383-1.569-17.285-1.569-53.499-0.001-96.866 43.393-96.866 96.921 0 53.531 43.367 96.924 96.865 96.924l328.131-0.006c48.069-0.092 87.004-39.106 87.004-87.223z";
+
+            var pathGeometry = Geometry.Parse(svgPathData);
+
+            var cloudIcon = new System.Windows.Shapes.Path
+            {
+                Data = pathGeometry,
+                Fill = Brushes.Gray, // You can customize the color
+                Width = 20,
+                Height = 20,
+                Stretch = Stretch.Uniform
+            };
             return new List<SidebarItem>
             {
                 new SidebarItem
                 {
                     Title = "Save Tracker",
                     Type = SiderbarItemType.View,
-                    Icon = new BitmapImage(new Uri("pack://application:,,,/SaveTracker;component/icon.png")),
+                    Icon = cloudIcon,     
                     Opened = () => {
                         DebugConsole.WriteInfo("Save Tracker sidebar opened");
-                
+                        cloudIcon.Fill = Brushes.White;
+
                         // Return your existing settings view instead of custom control
                         return new SaveTrackerSettingsView(PlayniteApi, Settings);
                     },
+                    
                     Closed = () => {
                         DebugConsole.WriteInfo("Save Tracker sidebar closed");
+                        cloudIcon.Fill = Brushes.Gray;
+
                     }
                 }
             };
-        }       
+        }
+
+        // To add new main menu items override GetMainMenuItems
+        public override IEnumerable<TopPanelItem> GetTopPanelItems()
+        {DebugConsole.WriteLine("Generating TopPanelItems for current view...");
+
+            // SVG path from IcoMoon
+            var pathIDle = "M512 328.771c0-41.045-28.339-75.45-66.498-84.74-1.621-64.35-54.229-116.031-118.931-116.031-37.896 0-71.633 17.747-93.427 45.366-12.221-15.799-31.345-25.98-52.854-25.98-36.905 0-66.821 29.937-66.821 66.861 0 3.218 0.24 6.38 0.682 9.477-5.611-1.012-11.383-1.569-17.285-1.569-53.499-0.001-96.866 43.393-96.866 96.921 0 53.531 43.367 96.924 96.865 96.924l328.131-0.006c48.069-0.092 87.004-39.106 87.004-87.223z";
+
+            var pathGeometry = Geometry.Parse(pathIDle);
+
+             cloudIcon = new System.Windows.Shapes.Path
+            {
+                Data = pathGeometry,
+                Fill = Brushes.White, // You can customize the color
+                Stroke = Brushes.Gray,
+                StrokeThickness = 2,
+                Width = 30,
+                Height = 30,
+                Stretch = Stretch.Uniform
+            };
+
+            yield return new TopPanelItem
+            {
+                Icon = cloudIcon,
+                Title = "Cloud Sync",
+               
+            };
+        }
+
+
+
 
         public override async void OnGameStarted(OnGameStartedEventArgs args)
         {
@@ -163,9 +214,8 @@ namespace SaveTracker
                     DebugConsole.WriteInfo($"Saving JSON file to: {jsonPath}");
 
                     // Save the tracked files to JSON
-                    File.WriteAllText(jsonPath,
-                        JsonSerializer.Serialize(saveList,
-                            new JsonSerializerOptions { WriteIndented = true }));
+                    await SafeWriteAllTextAsync(jsonPath, JsonConvert.SerializeObject(saveList, Formatting.Indented));
+
 
                     // Add the JSON file itself to the list
                     saveList.Add(jsonPath);
@@ -175,8 +225,11 @@ namespace SaveTracker
                     {
                         // Upload the files to cloud
                         DebugConsole.WriteInfo("Starting cloud upload...");
-                        rcloneUploader = new RcloneUploader();
-                        await rcloneUploader.Upload(saveList, PlayniteApi, args.Game.Name);
+                        rcloneUploader = new RcloneUploader(){            UploaderSettings = Settings
+                        };
+                        
+
+                        await rcloneUploader.Upload(saveList, PlayniteApi, args.Game.Name, (CloudProvider)Settings.Settings.SelectedProviderIndex);
                         DebugConsole.WriteSuccess("Cloud upload completed");
                     }
                    
@@ -189,6 +242,22 @@ namespace SaveTracker
             {
                 DebugConsole.WriteException(e, "OnGameStopped");
                 PlayniteApi.Dialogs.ShowMessage($"Error during game stop: {e.Message}");
+            }
+        }
+        public static async Task SafeWriteAllTextAsync(string path, string content, int retries = 5, int delayMs = 200)
+        {
+            for (int i = 0; i < retries; i++)
+            {
+                try
+                {
+                    File.WriteAllText(path, content);
+                    return;
+                }
+                catch (IOException)
+                {
+                    if (i == retries - 1) throw;
+                    await Task.Delay(delayMs);
+                }
             }
         }
 

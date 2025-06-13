@@ -31,8 +31,8 @@ namespace SaveTracker
             api = MainApi;
             settings = MainSettingsViewModel;
             InitializeComponent();
-            
             DataContext = settings;
+            rclone = new RcloneUploader(){UploaderSettings = settings};
 
         }
 
@@ -44,7 +44,7 @@ namespace SaveTracker
             var game = GetSelectedGame();
 
     var DownloadPath = System.IO.Path.Combine(api.Paths.ApplicationPath, game.InstallDirectory, "SavesDownloaded");
-    var result = await rclone.Download(game.Name, DownloadPath, api, true);
+    await rclone.Download(game.Name, DownloadPath, api,(CloudProvider)settings.Settings.SelectedProviderIndex, true);
     var SaveListJson = System.IO.Path.Combine(DownloadPath, "GameFiles.json");
     
     // Read the JSON file content
@@ -173,7 +173,7 @@ private string ReplaceUserInPath(string originalPath, string currentUser)
                 DebugConsole.WriteInfo($"Found {saveFilePaths.Count} save files for {game.Name}");
         
                 // Pass the actual file paths to RcloneUploader
-                rclone.Upload(saveFilePaths, api, game.Name);
+                rclone.Upload(saveFilePaths, api, game.Name, (CloudProvider)settings.Settings.SelectedProviderIndex);
             }
             catch (Exception ex)
             {
@@ -224,6 +224,8 @@ private string ReplaceUserInPath(string originalPath, string currentUser)
                 DebugConsole.HideConsole();
 
             }
+            
+            DebugConsole.WriteInfo("Cloud Provider: " + (CloudProvider)settings.Settings.SelectedProviderIndex);
         }
     }
 }
