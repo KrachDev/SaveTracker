@@ -17,6 +17,7 @@ using Playnite.SDK;
 using Playnite.SDK.Models;
 using Path = System.Windows.Shapes.Path;
 using System.IO;
+using SaveTracker.Resources.Logic;
 
 namespace SaveTracker
 {

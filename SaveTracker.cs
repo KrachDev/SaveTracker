@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using System.Windows.Controls;
 using System.Windows.Media;
 using Newtonsoft.Json;
+using SaveTracker.Resources.Logic;
 
 namespace SaveTracker
 {
@@ -16,13 +17,14 @@ namespace SaveTracker
         private static SaveTrackerSettingsViewModel Settings { get; set; }
 
         public override Guid Id { get; } = Guid.Parse("ad1eece9-6f59-460a-a7db-0d5fe5255ebd");
-        public static CloudProvider selectedProvider;
-        public static System.Windows.Shapes.Path cloudIcon; 
-        public TrackLogic trackLogic = new TrackLogic()
+        private static System.Windows.Shapes.Path _cloudIcon;
+
+        private readonly TrackLogic _trackLogic = new TrackLogic()
         {
             TrackerSettings = Settings,
         };
-        public RcloneUploader rcloneUploader = new RcloneUploader();
+
+        private RcloneUploader _rcloneUploader = new RcloneUploader();
 
         public SaveTracker(IPlayniteAPI api) : base(api)
         {
@@ -31,8 +33,8 @@ namespace SaveTracker
             {
                 HasSettings = true
             };
-            selectedProvider =  (CloudProvider)Settings.Settings.SelectedProviderIndex;
-            rcloneUploader.UploaderSettings = Settings;
+            var selectedProvider = (CloudProvider)Settings.Settings.SelectedProviderIndex;
+            _rcloneUploader.UploaderSettings = Settings;
             // Enable debug console based on settings
             DebugConsole.Enable(Settings.Settings.ShowCosnoleOption);
             DebugConsole.WriteInfo("SaveTracker plugin initialized");
@@ -89,7 +91,7 @@ namespace SaveTracker
 
             var pathGeometry = Geometry.Parse(pathIDle);
 
-             cloudIcon = new System.Windows.Shapes.Path
+             _cloudIcon = new System.Windows.Shapes.Path
             {
                 Data = pathGeometry,
                 Fill = Brushes.White, // You can customize the color
@@ -102,8 +104,8 @@ namespace SaveTracker
 
             yield return new TopPanelItem
             {
-                Icon = cloudIcon,
-                Title = "Cloud Sync",
+                Icon = _cloudIcon,
+                Title = "Cloud Dev",
                
             };
         }
@@ -113,87 +115,91 @@ namespace SaveTracker
 
         public override async void OnGameStarted(OnGameStartedEventArgs args)
         {
-            base.OnGameStarted(args);
-
             try
             {
-                // Update console state based on current settings
-                DebugConsole.Enable(Settings.Settings.ShowCosnoleOption);
+                base.OnGameStarted(args);
+
+                try
+                {
+                    // Update console state based on current settings
+                    DebugConsole.Enable(Settings.Settings.ShowCosnoleOption);
                 
-                DebugConsole.WriteSection("Game Started");
-                DebugConsole.WriteKeyValue("Game Name", args.Game.Name);
-                DebugConsole.WriteKeyValue("Start Time", DateTime.Now);
+                    DebugConsole.WriteSection("Game Started");
+                    DebugConsole.WriteKeyValue("Game Name", args.Game.Name);
+                    DebugConsole.WriteKeyValue("Start Time", DateTime.Now);
 
-                // Detect game source (Steam, Epic, etc.)
-                string source = args.Game.Source?.Name ?? "Unknown";
-                string pluginId = args.Game.PluginId.ToString() ?? "";
+                    // Detect game source (Steam, Epic, etc.)
+                    string source = args.Game.Source?.Name ?? "Unknown";
+                    string pluginId = args.Game.PluginId.ToString();
 
-                bool isStandalone = string.IsNullOrEmpty(pluginId);
+                    bool isStandalone = string.IsNullOrEmpty(pluginId);
 
-                DebugConsole.WriteKeyValue("Game Source", source);
-                DebugConsole.WriteKeyValue("Plugin ID", pluginId);
-                DebugConsole.WriteKeyValue("Is Standalone", isStandalone);
+                    DebugConsole.WriteKeyValue("Game Source", source);
+                    DebugConsole.WriteKeyValue("Plugin ID", pluginId);
+                    DebugConsole.WriteKeyValue("Is Standalone", isStandalone);
 
-                if (isStandalone)
-                {
-                    DebugConsole.WriteInfo("Game is running as a standalone executable (no launcher)");
-                }
-                else
-                {
-                    DebugConsole.WriteInfo($"Game launched via launcher: {source}");
-                }
+                    DebugConsole.WriteInfo(isStandalone
+                        ? "Game is running as a standalone executable (no launcher)"
+                        : $"Game launched via launcher: {source}");
 
-                // Get the executable path
-                string gamePath = args.SourceAction?.Path;
-                DebugConsole.WriteKeyValue("Game Path", gamePath ?? "NOT FOUND");
+                    // Get the executable path
+                    string gamePath = args.SourceAction?.Path;
+                    DebugConsole.WriteKeyValue("Game Path", gamePath ?? "NOT FOUND");
 
-                if (!string.IsNullOrEmpty(gamePath))
-                {
-                    var trackLogic = new TrackLogic(){
-                        TrackerSettings = Settings,
-                    };
-                    string exeName = Path.GetFileName(gamePath);
-
-                    if (Settings.Settings.TrackFiles &&  source == "Unknown")
+                    if (!string.IsNullOrEmpty(gamePath))
                     {
-                        DebugConsole.WriteInfo($"Starting to track executable: {exeName}");
-                        await trackLogic.Track(exeName, PlayniteApi, args, Settings.Settings.ShowCosnoleOption);
-                        DebugConsole.WriteSuccess("Tracking started successfully");
+                        var trackLogic = new TrackLogic(){
+                            TrackerSettings = Settings,
+                        };
+                        string exeName = Path.GetFileName(gamePath);
+
+                        if (Settings.Settings.TrackFiles &&  source == "Unknown")
+                        {
+                            DebugConsole.WriteInfo($"Starting to track executable: {exeName}");
+                            await trackLogic.Track(exeName, PlayniteApi, args, Settings.Settings.ShowCosnoleOption);
+                            DebugConsole.WriteSuccess("Tracking started successfully");
+                        }
+                        else
+                        {
+                            DebugConsole.WriteInfo($"Game Has a Client " + source);
+
+                        }
                     }
                     else
                     {
-                        DebugConsole.WriteInfo($"Game Has a Client " + source);
-
+                        string errorMsg = "No executable path found";
+                        DebugConsole.WriteError(errorMsg);
+                        PlayniteApi.Dialogs.ShowMessage(errorMsg);
                     }
                 }
-                else
+                catch (Exception ex)
                 {
-                    string errorMsg = "No executable path found";
-                    DebugConsole.WriteError(errorMsg);
-                    PlayniteApi.Dialogs.ShowMessage(errorMsg);
+                    DebugConsole.WriteException(ex, "OnGameStarted");
+                    PlayniteApi.Dialogs.ShowMessage($"Error starting game tracking: {ex.Message}");
                 }
             }
-            catch (Exception ex)
+            catch (Exception e)
             {
-                DebugConsole.WriteException(ex, "OnGameStarted");
-                PlayniteApi.Dialogs.ShowMessage($"Error starting game tracking: {ex.Message}");
+                DebugConsole.WriteException(e, "OnGameStarted");
             }
         }
 
-        public async override void OnGameStopped(OnGameStoppedEventArgs args)
+        public override async void OnGameStopped(OnGameStoppedEventArgs args)
         {
             try
             {
-                if (Settings.Settings.TrackFiles)
+                string source = args.Game.Source?.Name ?? "Unknown";
+
+                if (Settings.Settings.TrackFiles &&  source == "Unknown")
                 {
                     DebugConsole.WriteSection("Game Stopped");
                 DebugConsole.WriteKeyValue("Game Name", args.Game.Name);
                 DebugConsole.WriteKeyValue("Stop Time", DateTime.Now);
 
                 DebugConsole.WriteInfo("Stopping file tracking...");
-                trackLogic.StopTracking();
+                _trackLogic.StopTracking();
                 
-                var saveList = trackLogic.GetSaveList();
+                var saveList = TrackLogic.GetSaveList();
                 DebugConsole.WriteKeyValue("Files Found", saveList.Count);
 
                 if (saveList.Count == 0)
@@ -225,11 +231,11 @@ namespace SaveTracker
                     {
                         // Upload the files to cloud
                         DebugConsole.WriteInfo("Starting cloud upload...");
-                        rcloneUploader = new RcloneUploader(){            UploaderSettings = Settings
+                        _rcloneUploader = new RcloneUploader(){            UploaderSettings = Settings
                         };
                         
 
-                        await rcloneUploader.Upload(saveList, PlayniteApi, args.Game.Name, (CloudProvider)Settings.Settings.SelectedProviderIndex);
+                        await _rcloneUploader.Upload(saveList, PlayniteApi, args.Game.Name, (CloudProvider)Settings.Settings.SelectedProviderIndex);
                         DebugConsole.WriteSuccess("Cloud upload completed");
                     }
                    
@@ -244,7 +250,8 @@ namespace SaveTracker
                 PlayniteApi.Dialogs.ShowMessage($"Error during game stop: {e.Message}");
             }
         }
-        public static async Task SafeWriteAllTextAsync(string path, string content, int retries = 5, int delayMs = 200)
+
+        private static async Task SafeWriteAllTextAsync(string path, string content, int retries = 5, int delayMs = 200)
         {
             for (int i = 0; i < retries; i++)
             {
