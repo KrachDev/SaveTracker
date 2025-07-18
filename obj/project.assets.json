@@ -14,6 +14,19 @@
             "related": ".xml"
           }
         }
+      },
+      "PlayniteSDK/6.12.0": {
+        "type": "package",
+        "compile": {
+          "lib/net462/Playnite.SDK.dll": {
+            "related": ".xml"
+          }
+        },
+        "runtime": {
+          "lib/net462/Playnite.SDK.dll": {
+            "related": ".xml"
+          }
+        }
       }
     },
     ".NETFramework,Version=v4.7.2/win": {
@@ -26,6 +39,19 @@
         },
         "runtime": {
           "lib/net45/Newtonsoft.Json.dll": {
+            "related": ".xml"
+          }
+        }
+      },
+      "PlayniteSDK/6.12.0": {
+        "type": "package",
+        "compile": {
+          "lib/net462/Playnite.SDK.dll": {
+            "related": ".xml"
+          }
+        },
+        "runtime": {
+          "lib/net462/Playnite.SDK.dll": {
             "related": ".xml"
           }
         }
@@ -44,6 +70,19 @@
             "related": ".xml"
           }
         }
+      },
+      "PlayniteSDK/6.12.0": {
+        "type": "package",
+        "compile": {
+          "lib/net462/Playnite.SDK.dll": {
+            "related": ".xml"
+          }
+        },
+        "runtime": {
+          "lib/net462/Playnite.SDK.dll": {
+            "related": ".xml"
+          }
+        }
       }
     },
     ".NETFramework,Version=v4.7.2/win-x64": {
@@ -59,6 +98,19 @@
             "related": ".xml"
           }
         }
+      },
+      "PlayniteSDK/6.12.0": {
+        "type": "package",
+        "compile": {
+          "lib/net462/Playnite.SDK.dll": {
+            "related": ".xml"
+          }
+        },
+        "runtime": {
+          "lib/net462/Playnite.SDK.dll": {
+            "related": ".xml"
+          }
+        }
       }
     },
     ".NETFramework,Version=v4.7.2/win-x86": {
@@ -71,6 +123,19 @@
         },
         "runtime": {
           "lib/net45/Newtonsoft.Json.dll": {
+            "related": ".xml"
+          }
+        }
+      },
+      "PlayniteSDK/6.12.0": {
+        "type": "package",
+        "compile": {
+          "lib/net462/Playnite.SDK.dll": {
+            "related": ".xml"
+          }
+        },
+        "runtime": {
+          "lib/net462/Playnite.SDK.dll": {
             "related": ".xml"
           }
         }
@@ -107,11 +172,27 @@
         "newtonsoft.json.nuspec",
         "packageIcon.png"
       ]
+    },
+    "PlayniteSDK/6.12.0": {
+      "sha512": "BkFQnR1T1MXyqi+88yBxn59lQI96820xWDSQtu6hFb5P6HeYTMj+Z/Wt97YyJ4OnsfdUBowLAn6eimw0up44rg==",
+      "type": "package",
+      "path": "playnitesdk/6.12.0",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "docs/readme.md",
+        "images/applogo.png",
+        "lib/net462/Playnite.SDK.dll",
+        "lib/net462/Playnite.SDK.xml",
+        "playnitesdk.6.12.0.nupkg.sha512",
+        "playnitesdk.nuspec"
+      ]
     }
   },
   "projectFileDependencyGroups": {
     ".NETFramework,Version=v4.7.2": [
-      "Newtonsoft.Json >= 13.0.3"
+      "Newtonsoft.Json >= 13.0.3",
+      "PlayniteSDK >= 6.12.0"
     ]
   },
   "packageFolders": {
@@ -155,6 +236,10 @@
           "Newtonsoft.Json": {
             "target": "Package",
             "version": "[13.0.3, )"
+          },
+          "PlayniteSDK": {
+            "target": "Package",
+            "version": "[6.12.0, )"
           }
         }
       }

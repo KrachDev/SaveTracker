@@ -4,7 +4,7 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              mc:Ignorable="d"
-             d:DesignHeight="500" d:DesignWidth="700"
+             d:DesignHeight="1520" d:DesignWidth="700"
              Background="#1E1E1E">
     <UserControl.Resources>
         <!-- Dark Mode Button Style -->
@@ -367,7 +367,6 @@
                                           IsChecked="{Binding Settings.TrackFiles}"
                                           VerticalAlignment="Center"
                                           Foreground="White"
-                                          Style="{StaticResource DarkCheckBoxStyle}"
                                           DockPanel.Dock="Left"/>
                                 <TextBlock Text="Track Files" 
                                            FontSize="14" 
@@ -387,12 +386,34 @@
                     <Border Background="#3C3C3C" CornerRadius="4" BorderBrush="#555555" BorderThickness="1">
                         <StackPanel Margin="15">
                             <DockPanel>
+                                <CheckBox Name="Track3rdBox" 
+                                          IsChecked="{Binding Settings.Track3rdParty}"
+                                          VerticalAlignment="Center"
+                                          Foreground="White"
+                                          DockPanel.Dock="Left"/>
+                                <TextBlock Text="Track 3rd party games" 
+                                           FontSize="14" 
+                                           FontWeight="Medium"
+                                           Foreground="#FFFFFF"
+                                           Margin="10,0,0,0"
+                                           VerticalAlignment="Center"/>
+                            </DockPanel>
+                            <TextBlock Text="Track saves even if game is launched via 3rd party launcher *(steam, epic, etc)" 
+                                       FontSize="12"
+                                       Foreground="#CCCCCC"
+                                       Margin="25,8,0,0"
+                                       
+                                       TextWrapping="Wrap"/>
+                        </StackPanel>
+                    </Border>
+                    <Border Background="#3C3C3C" CornerRadius="4" BorderBrush="#555555" BorderThickness="1">
+                        <StackPanel Margin="15">
+                            <DockPanel>
                                 <CheckBox Name="AutoSyncBox" 
                                           IsChecked="{Binding Settings.AutoSyncOption}"
                                           VerticalAlignment="Center"
                                           Foreground="White"
 
-                                          Style="{StaticResource DarkCheckBoxStyle}"
                                           DockPanel.Dock="Left"/>
                                 <TextBlock Text="Auto Sync" 
                                            FontSize="14" 
@@ -417,7 +438,6 @@
                                           VerticalAlignment="Center"
                                           Foreground="White"
 
-                                          Style="{StaticResource DarkCheckBoxStyle}"
                                           DockPanel.Dock="Left"/>
                                 <TextBlock Text="Show Debug Console" 
                                            FontSize="14" 
@@ -458,7 +478,6 @@
                                           IsChecked="{Binding Settings.TrackWrites}"
                                           VerticalAlignment="Center"
                                           Foreground="White"
-                                          Style="{StaticResource DarkCheckBoxStyle}"
                                           DockPanel.Dock="Left"/>
                                 <TextBlock Text="Track Write " 
                                            FontSize="14" 
@@ -482,7 +501,6 @@
                                           IsChecked="{Binding Settings.TrackReads}"
                                           VerticalAlignment="Center"
                                           Foreground="White"
-                                          Style="{StaticResource DarkCheckBoxStyle}"
                                           DockPanel.Dock="Left"/>
                                 <TextBlock Text="Track Read " 
                                            FontSize="14" 
@@ -516,7 +534,8 @@
                     </DataTemplate>
                 </GroupBox.HeaderTemplate>
                 
-                <Grid Margin="15">
+                <Grid>
+                    <Grid Margin="15">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="*"/>
                         <ColumnDefinition Width="15"/>
@@ -580,6 +599,9 @@
                                    Click="DownloadButton_Click"/>
                         </StackPanel>
                     </Border>
+                    
+                </Grid>
+
                 </Grid>
             </GroupBox>
 

@@ -4,10 +4,13 @@ using Playnite.SDK.Plugins;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
+using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 using Newtonsoft.Json;
+using Playnite.SDK.Models;
 using SaveTracker.Resources.Logic;
 
 namespace SaveTracker
@@ -24,8 +27,9 @@ namespace SaveTracker
             TrackerSettings = Settings,
         };
 
-        private RcloneUploader _rcloneUploader = new RcloneUploader();
+        private RcloneManager _rcloneManager;
 
+        public static IPlayniteAPI  PlayniteApi { get; set; }
         public SaveTracker(IPlayniteAPI api) : base(api)
         {
             Settings = new SaveTrackerSettingsViewModel(this);
@@ -33,8 +37,11 @@ namespace SaveTracker
             {
                 HasSettings = true
             };
+            PlayniteApi = api;
+            _rcloneManager   = new RcloneManager(Settings);
+            
             var selectedProvider = (CloudProvider)Settings.Settings.SelectedProviderIndex;
-            _rcloneUploader.UploaderSettings = Settings;
+            _rcloneManager.UploaderSettings = Settings;
             // Enable debug console based on settings
             DebugConsole.Enable(Settings.Settings.ShowCosnoleOption);
             DebugConsole.WriteInfo("SaveTracker plugin initialized");
@@ -105,10 +112,57 @@ namespace SaveTracker
             yield return new TopPanelItem
             {
                 Icon = _cloudIcon,
-                Title = "Cloud Dev",
+                Title = "Cloud Dev Extra2",
                
             };
         }
+        
+        
+        
+        public override IEnumerable<MainMenuItem> GetMainMenuItems(GetMainMenuItemsArgs args)
+        {
+            // Added into "Extensions" menu
+            yield return new MainMenuItem
+            {
+                MenuSection = "@TEST1"
+            };
+
+            // Added into "Extensions -> submenu" menu
+            yield return new MainMenuItem
+            {
+                MenuSection = "@Save Tracker|@Upload",
+                Description = "Manual Upload Of Save Files",
+               
+            };
+            yield return new MainMenuItem
+            {
+                MenuSection = "@Save Tracker| Download"
+            };
+
+            
+            
+        }
+
+        public async override void OnGameStarting(OnGameStartingEventArgs args)
+        {
+            base.OnGameStarting(args);
+            var isAdmin = await _trackLogic.IsAdministrator();
+
+            if (!isAdmin)
+            {
+                PlayniteApi.Dialogs.ShowMessage("Access denied. Please run as Administrator to track file I/O.");
+                var result = PlayniteApi.Dialogs.ShowMessage("Do you want to restart as Admin?", "Run As", MessageBoxButton.YesNo);
+                if (result == MessageBoxResult.Yes)
+                {
+                    await _trackLogic.RestartAsAdmin();
+                }
+                else
+                {
+                    // User clicked No or closed the dialog
+                }
+            }
+        }
+
 
 
 
@@ -153,17 +207,31 @@ namespace SaveTracker
                         };
                         string exeName = Path.GetFileName(gamePath);
 
-                        if (Settings.Settings.TrackFiles &&  source == "Unknown")
+                        if (Settings.Settings.TrackFiles)
                         {
+                            // Skip tracking if the game was launched via a known launcher
+                            if (source != "Unknown" && !Settings.Settings.Track3rdParty)
+                            {
+                                DebugConsole.WriteInfo($"Skipping tracking: Game has a client ({source}) and 3rd-party tracking is disabled.");
+                                return;
+                            }
+
                             DebugConsole.WriteInfo($"Starting to track executable: {exeName}");
-                            await trackLogic.Track(exeName, PlayniteApi, args, Settings.Settings.ShowCosnoleOption);
-                            DebugConsole.WriteSuccess("Tracking started successfully");
+                            try
+                            {
+                                await trackLogic.Track(exeName, PlayniteApi, args, Settings.Settings.ShowCosnoleOption);
+                                DebugConsole.WriteSuccess("Tracking started successfully");
+                            }
+                            catch (Exception ex)
+                            {
+                                DebugConsole.WriteError($"Failed to start tracking: {ex.Message}");
+                            }
                         }
                         else
                         {
-                            DebugConsole.WriteInfo($"Game Has a Client " + source);
-
+                            DebugConsole.WriteInfo($"Tracking disabled in settings. Game client: {source}");
                         }
+
                     }
                     else
                     {
@@ -188,60 +256,70 @@ namespace SaveTracker
         {
             try
             {
+   
+                
                 string source = args.Game.Source?.Name ?? "Unknown";
 
-                if (Settings.Settings.TrackFiles &&  source == "Unknown")
-                {
-                    DebugConsole.WriteSection("Game Stopped");
-                DebugConsole.WriteKeyValue("Game Name", args.Game.Name);
-                DebugConsole.WriteKeyValue("Stop Time", DateTime.Now);
+// Only continue if tracking is enabled
+if (Settings.Settings.TrackFiles)
+{
+    // Determine if we should handle this based on launcher source
+    bool isPlayniteLaunch = source == "Unknown";
+    bool allow3RdParty = Settings.Settings.Track3rdParty;
 
-                DebugConsole.WriteInfo("Stopping file tracking...");
-                _trackLogic.StopTracking();
-                
-                var saveList = TrackLogic.GetSaveList();
-                DebugConsole.WriteKeyValue("Files Found", saveList.Count);
+    if (!isPlayniteLaunch && !allow3RdParty)
+    {
+        DebugConsole.WriteInfo($"Tracking skipped: Game stopped and was launched via 3rd-party client ({source}), and Track3rdParty is disabled.");
+        return;
+    }
 
-                if (saveList.Count == 0)
-                {
-                    string msg = "No save files were tracked";
-                    DebugConsole.WriteWarning(msg);
-                    PlayniteApi.Dialogs.ShowMessage(msg);
-                }
-                else
-                {
-                    DebugConsole.WriteList("Tracked Save Files", saveList);
+    DebugConsole.WriteSection("Game Stopped");
+    DebugConsole.WriteKeyValue("Game Name", args.Game.Name);
+    DebugConsole.WriteKeyValue("Stop Time", DateTime.Now);
 
-                    var message = "Saves:\n" + string.Join("\n", saveList);
-                    NotificationMessage msg = new NotificationMessage("Save Files", message, NotificationType.Info);
-                    PlayniteApi.Notifications.Add(msg);
+    DebugConsole.WriteInfo("Stopping file tracking...");
+    _trackLogic.StopTracking();
 
-                    var jsonPath = Path.Combine(args.Game.InstallDirectory, "GameFiles.json");
-                    DebugConsole.WriteInfo($"Saving JSON file to: {jsonPath}");
+    var saveList = TrackLogic.GetSaveList();
+    DebugConsole.WriteList("test List", saveList);
+    DebugConsole.WriteKeyValue("Files Found", saveList.Count);
 
-                    // Save the tracked files to JSON
-                    await SafeWriteAllTextAsync(jsonPath, JsonConvert.SerializeObject(saveList, Formatting.Indented));
+    if (saveList.Count == 0)
+    {
+        string msg = "No save files were tracked.";
+        DebugConsole.WriteWarning(msg);
+        PlayniteApi.Dialogs.ShowMessage(msg);
+        return;
+    }
+
+    DebugConsole.WriteList("Tracked Save Files", saveList);
+
+    var message = "Saves:\n" + string.Join("\n", saveList);
+    var notification = new NotificationMessage("Save Files", message, NotificationType.Info);
+    PlayniteApi.Notifications.Add(notification);
 
 
-                    // Add the JSON file itself to the list
-                    saveList.Add(jsonPath);
-                    DebugConsole.WriteInfo("Added JSON file to upload list");
+  
+    if (Settings.Settings.AutoSyncOption)
+    {
+        DebugConsole.WriteInfo("Starting cloud upload...");
 
-                    if (Settings.Settings.AutoSyncOption && Settings.Settings.TrackFiles)
-                    {
-                        // Upload the files to cloud
-                        DebugConsole.WriteInfo("Starting cloud upload...");
-                        _rcloneUploader = new RcloneUploader(){            UploaderSettings = Settings
-                        };
-                        
+        try
+        {
+            _rcloneManager = new RcloneManager(Settings)
+            {
+                UploaderSettings = Settings
+            };
 
-                        await _rcloneUploader.Upload(saveList, PlayniteApi, args.Game.Name, (CloudProvider)Settings.Settings.SelectedProviderIndex);
-                        DebugConsole.WriteSuccess("Cloud upload completed");
-                    }
-                   
-                }
-
-                }
+            await _rcloneManager.Upload(saveList, PlayniteApi, args.Game, (CloudProvider)Settings.Settings.SelectedProviderIndex);
+            DebugConsole.WriteSuccess("Cloud upload completed.");
+        }
+        catch (Exception ex)
+        {
+            DebugConsole.WriteError($"Cloud upload failed: {ex.Message}");
+        }
+    }
+}
                 DebugConsole.WriteSection("Game Session Complete");
             }
             catch (Exception e)

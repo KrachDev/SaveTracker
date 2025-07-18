@@ -10,12 +10,13 @@ namespace SaveTracker
 {
     public class SaveTrackerSettings : ObservableObject
     {
-        private bool showscosnoleoption = false;
+        private bool showscosnoleoption;
         private bool autosync = true;
         private bool tackfiles = true;
-        private bool trackreads = false;
+        private bool trackreads;
         private bool trackwrites = true;
-        private bool optionThatWontBeSaved = false;
+        private bool optionThatWontBeSaved;
+        private bool track3rdparty = false;
         private CloudProvider selectedProvider = CloudProvider.GoogleDrive;
 
         public CloudProvider SelectedProvider 
@@ -32,6 +33,7 @@ namespace SaveTracker
                 OnPropertyChanged(); // or however you handle property change notifications
             }
         }
+        public bool Track3rdParty { get => track3rdparty; set => SetValue(ref track3rdparty, value); }
         public bool ShowCosnoleOption { get => showscosnoleoption; set => SetValue(ref showscosnoleoption, value); }
         public bool TrackWrites { get => trackwrites; set => SetValue(ref trackwrites, value); }
         public bool TrackReads { get => trackreads; set => SetValue(ref trackreads, value); }

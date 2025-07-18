@@ -2,29 +2,21 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
 using Newtonsoft.Json;
 using Playnite.SDK;
 using Playnite.SDK.Models;
-using Path = System.Windows.Shapes.Path;
-using System.IO;
+using SaveTracker;
 using SaveTracker.Resources.Logic;
+using SaveTracker.Resources.Logic.RecloneManagment;
 
 namespace SaveTracker
 {
-    public partial class SaveTrackerSettingsView : UserControl
+    public partial class SaveTrackerSettingsView 
     {
         private IPlayniteAPI api;
-        RcloneUploader rclone = new RcloneUploader();
+        RcloneManager rclone;
         private SaveTrackerSettingsViewModel settings;
 
         public SaveTrackerSettingsView(IPlayniteAPI MainApi, SaveTrackerSettingsViewModel MainSettingsViewModel)
@@ -33,102 +25,33 @@ namespace SaveTracker
             settings = MainSettingsViewModel;
             InitializeComponent();
             DataContext = settings;
-            rclone = new RcloneUploader(){UploaderSettings = settings};
+            rclone = new RcloneManager(settings)
+            {
+            };
 
         }
 
-       private async void DownloadButton_Click(object sender, RoutedEventArgs e)
-        {
-            try
-            {
- 
-            var game = GetSelectedGame();
+// First, add these classes to handle the new JSON structure
 
-    var DownloadPath = System.IO.Path.Combine(api.Paths.ApplicationPath, game.InstallDirectory, "SavesDownloaded");
-    await rclone.Download(game.Name, DownloadPath, api,(CloudProvider)settings.Settings.SelectedProviderIndex, true);
-    var SaveListJson = System.IO.Path.Combine(DownloadPath, "GameFiles.json");
-    
-    // Read the JSON file content
-    var jsonContent = File.ReadAllText(SaveListJson);
-
-    // Deserialize to get the list of file paths
-    var saveFilePaths = JsonConvert.DeserializeObject<List<string>>(jsonContent);
-    
-    // Get all downloaded files except JSON files
-    var downloadedFiles = Directory.GetFiles(DownloadPath)
-        .Where(file => !file.EndsWith(".json", StringComparison.OrdinalIgnoreCase))
-        .ToList();
-    
-    // Get current username for path replacement
-    var currentUser = Environment.UserName;
-    
-    // Copy each downloaded file to its corresponding location
-    foreach (var downloadedFile in downloadedFiles)
-    {
-        try
-        {
-            var fileName = System.IO.Path.GetFileName(downloadedFile);
-            
-            // Find matching path in JSON by filename
-            var matchingJsonPath = saveFilePaths.FirstOrDefault(path => 
-                System.IO. Path.GetFileName(path).Equals(fileName, StringComparison.OrdinalIgnoreCase));
-            
-            if (matchingJsonPath != null)
-            {
-                // Replace username in path if different
-                var destinationPath = ReplaceUserInPath(matchingJsonPath, currentUser);
-                
-                // Create the destination directory if it doesn't exist
-                var destinationDirectory = System.IO.Path.GetDirectoryName(destinationPath);
-                if (!Directory.Exists(destinationDirectory))
-                {
-                    Directory.CreateDirectory(destinationDirectory);
-                }
-                
-                // Copy the file
-                File.Copy(downloadedFile, destinationPath, overwrite: true);
-                DebugConsole.WriteLine($"Copied: {fileName} -> {destinationPath}");
-            }
-            else
-            {
-                DebugConsole.WriteLine($"No matching path found in JSON for file: {fileName}");
-            }
-        }
-        catch (Exception ex)
-        {
-            DebugConsole.WriteLine($"Error copying file {System.IO.Path.GetFileName(downloadedFile)}: {ex.Message}");
-        }
-    }
-            }
-            catch (Exception exception)
-            {
-                DebugConsole.WriteError(exception.Message);
-                throw;
-            }
-        }
-
-private string ReplaceUserInPath(string originalPath, string currentUser)
+// Updated method
+private async void DownloadButton_Click(object sender, RoutedEventArgs e)
 {
-    // Check if path contains Users directory
-    if (originalPath.Contains("\\Users\\"))
+    try
     {
-        // Extract the old username from the path
-        var userIndex = originalPath.IndexOf("\\Users\\") + 7; // 7 = length of "\\Users\\"
-        var nextSlashIndex = originalPath.IndexOf("\\", userIndex);
-        
-        if (nextSlashIndex > userIndex)
-        {
-            var oldUser = originalPath.Substring(userIndex, nextSlashIndex - userIndex);
+        var game = GetSelectedGame();
+
+        var DownloadPath = System.IO.Path.Combine(api.Paths.ApplicationPath, game.InstallDirectory, "SavesDownloaded");
+        await rclone.Download(game, api,(CloudProvider)settings.Settings.SelectedProviderIndex, true);
+
+      
+               
             
-            // Replace old username with current username
-            if (!oldUser.Equals(currentUser, StringComparison.OrdinalIgnoreCase))
-            {
-                return originalPath.Replace($"\\Users\\{oldUser}\\", $"\\Users\\{currentUser}\\");
-            }
-        }
     }
-    
-    return originalPath; // Return original if no replacement needed
+    catch (Exception exception)
+    {
+        DebugConsole.WriteError(exception.Message);
+        throw;
+    }
 }
 
         private void UploadButton_Click(object sender, RoutedEventArgs e)
@@ -147,7 +70,7 @@ private string ReplaceUserInPath(string originalPath, string currentUser)
                 return;
             }
     
-            var jsonPath = System.IO.Path.Combine(game.InstallDirectory, "GameFiles.json");
+            var jsonPath = System.IO.Path.Combine(game.InstallDirectory, ".savetracker_checksums.json");
 
             if (!File.Exists(jsonPath))
             {
@@ -167,14 +90,14 @@ private string ReplaceUserInPath(string originalPath, string currentUser)
         
                 if (saveFilePaths == null || !saveFilePaths.Any())
                 {
-                    DebugConsole.WriteWarning($"No save files found in GameFiles.json for '{game.Name}'");
+                    DebugConsole.WriteWarning($"No save files found in .savetracker_checksums.json for '{game.Name}'");
                     return;
                 }
         
                 DebugConsole.WriteInfo($"Found {saveFilePaths.Count} save files for {game.Name}");
         
                 // Pass the actual file paths to RcloneUploader
-                rclone.Upload(saveFilePaths, api, game.Name, (CloudProvider)settings.Settings.SelectedProviderIndex);
+                rclone.Upload(saveFilePaths, api, game, (CloudProvider)settings.Settings.SelectedProviderIndex);
             }
             catch (Exception ex)
             {
@@ -229,4 +152,9 @@ private string ReplaceUserInPath(string originalPath, string currentUser)
             DebugConsole.WriteInfo("Cloud Provider: " + (CloudProvider)settings.Settings.SelectedProviderIndex);
         }
     }
+}
+public class SaveTrackerData
+{
+    public Dictionary<string, FileChecksumRecord> Files { get; set; }
+    public DateTime LastUpdated { get; set; }
 }
