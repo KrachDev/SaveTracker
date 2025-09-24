@@ -1,0 +1,26 @@
+AddonId: SaveTracker_ad1eece9-6f59-460a-a7db-0d5fe5255ebd
+Packages:
+  - Version: 2.0
+    RequiredApiVersion: 6.2.0
+    ReleaseDate: 2025-09-24
+    PackageUrl: https://github.com/KrachDev/SaveTracker/releases/download/v2.0/SaveTrackerV2.0.pext
+    Changelog:
+      - Major bug fixes and UI/XAML stability improvements
+      - Robust save detection with improved filters and hooking
+      - Per-game settings support
+      - Faster save scanning
+      - Updated dependencies (all stable releases)
+      - Upload & download progress window added
+      - Improved overall UI and usability
+  - Version: 1.1
+    RequiredApiVersion: 6.9.0
+    ReleaseDate: 2025-06-14
+    PackageUrl: https://github.com/KrachDev/SaveTracker/releases/download/v1.1/SaveTrackerV1.1.pext
+    Changelog:
+      - Bug Fixes And Minor impovements
+  - Version: 1.0
+    RequiredApiVersion: 6.9.0
+    ReleaseDate: 2025-06-13
+    PackageUrl: https://github.com/KrachDev/SaveTracker/releases/download/v1.0/SaveTrackerV1.0.pext
+    Changelog:
+      - Initial Release
