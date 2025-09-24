@@ -1,21 +1,21 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\Krach\\RiderProjects\\SaveTracker\\SaveTracker.csproj": {}
+    "C:\\Users\\Game Mode\\Documents\\RiderProjects\\SaveTracker\\SaveTracker.csproj": {}
   },
   "projects": {
-    "C:\\Users\\Krach\\RiderProjects\\SaveTracker\\SaveTracker.csproj": {
+    "C:\\Users\\Game Mode\\Documents\\RiderProjects\\SaveTracker\\SaveTracker.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\Krach\\RiderProjects\\SaveTracker\\SaveTracker.csproj",
+        "projectUniqueName": "C:\\Users\\Game Mode\\Documents\\RiderProjects\\SaveTracker\\SaveTracker.csproj",
         "projectName": "SaveTracker",
-        "projectPath": "C:\\Users\\Krach\\RiderProjects\\SaveTracker\\SaveTracker.csproj",
-        "packagesPath": "C:\\Users\\Krach\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\Krach\\RiderProjects\\SaveTracker\\obj\\",
+        "projectPath": "C:\\Users\\Game Mode\\Documents\\RiderProjects\\SaveTracker\\SaveTracker.csproj",
+        "packagesPath": "C:\\Users\\Game Mode\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\Game Mode\\Documents\\RiderProjects\\SaveTracker\\obj\\",
         "projectStyle": "PackageReference",
         "UsingMicrosoftNETSdk": false,
         "configFilePaths": [
-          "C:\\Users\\Krach\\AppData\\Roaming\\NuGet\\NuGet.Config"
+          "C:\\Users\\Game Mode\\AppData\\Roaming\\NuGet\\NuGet.Config"
         ],
         "originalTargetFrameworks": [
           "net6.0-windows"
@@ -39,6 +39,10 @@
         "net472": {
           "targetAlias": "net6.0-windows",
           "dependencies": {
+            "JetBrains.Annotations": {
+              "target": "Package",
+              "version": "[2025.2.2, )"
+            },
             "Newtonsoft.Json": {
               "target": "Package",
               "version": "[13.0.3, )"

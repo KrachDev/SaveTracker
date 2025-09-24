@@ -105,7 +105,7 @@ namespace SaveTracker.Resources.Logic
         /// <summary>
         /// Write a message to console if enabled
         /// </summary>
-        public static void WriteLine(string message = "", string title = "Data")
+        public static void WriteLine(string message = "", string title = "DATA")
         {
             if (!_isEnabled) return;
             
@@ -314,14 +314,14 @@ namespace SaveTracker.Resources.Logic
         /// <summary>
         /// Write a list of items
         /// </summary>
-        public static void WriteList<T>(string title, System.Collections.Generic.IEnumerable<T> items)
+        public static void WriteList<T>(string title, System.Collections.Generic.IEnumerable<T> items, string description = "")
         {
             if (!_isEnabled) return;
             
             WriteLine($"{title}:");
             foreach (var item in items)
             {
-                WriteLine($"  - {item}");
+                WriteLine(description != "" ? $"  - {item} | {description}" : $"  - {item}");
             }
         }
         

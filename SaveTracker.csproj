@@ -142,6 +142,7 @@
     <Reference Include="System.IO.Compression.ZipFile, Version=4.0.2.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
       <HintPath>packages\System.IO.Compression.ZipFile.4.3.0\lib\net46\System.IO.Compression.ZipFile.dll</HintPath>
     </Reference>
+    <Reference Include="System.Management" />
     <Reference Include="System.Memory, Version=4.0.1.2, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
       <HintPath>packages\System.Memory.4.5.5\lib\net461\System.Memory.dll</HintPath>
     </Reference>
@@ -190,14 +191,15 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Resources\Helpers\Misc.cs" />
+    <Compile Include="Resources\Helpers\ProcessMonitor.cs" />
     <Compile Include="Resources\Helpers\ZipFileEx.cs" />
     <Compile Include="Resources\Logic\DebugConsole.cs" />
     <Compile Include="Resources\Logic\RcloneManager.cs" />
-    <Compile Include="Resources\Logic\RecloneManagment\CloudProviderHelper.cs" />
-    <Compile Include="Resources\Logic\RecloneManagment\RcloneConfigManager.cs" />
-    <Compile Include="Resources\Logic\RecloneManagment\RcloneExecutor.cs" />
-    <Compile Include="Resources\Logic\RecloneManagment\RcloneFileOperations.cs" />
-    <Compile Include="Resources\Logic\RecloneManagment\RcloneInstaller.cs" />
+    <Compile Include="Resources\Logic\RecloneManagement\CloudProviderHelper.cs" />
+    <Compile Include="Resources\Logic\RecloneManagement\RcloneConfigManager.cs" />
+    <Compile Include="Resources\Logic\RecloneManagement\RcloneExecutor.cs" />
+    <Compile Include="Resources\Logic\RecloneManagement\RcloneFileOperations.cs" />
+    <Compile Include="Resources\Logic\RecloneManagement\RcloneInstaller.cs" />
     <Compile Include="Resources\Logic\TrackLogic.cs" />
     <Compile Include="SaveTracker.cs" />
     <Compile Include="SaveTrackerSettings.cs" />
@@ -205,6 +207,7 @@
       <DependentUpon>SaveTrackerSettingsView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="UploadProgressWindow.xaml.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
@@ -227,6 +230,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="UploadProgressWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Resources\Assets\cloud.svg" />
@@ -236,6 +243,7 @@
     </Resource>
   </ItemGroup>
   <ItemGroup>
+    <PackageReference Include="JetBrains.Annotations" Version="2025.2.2" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
     <PackageReference Include="PlayniteSDK" Version="6.12.0" />
   </ItemGroup>

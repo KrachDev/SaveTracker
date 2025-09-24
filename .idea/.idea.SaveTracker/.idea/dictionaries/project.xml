@@ -3,15 +3,23 @@
     <words>
       <w>amazonclouddrive</w>
       <w>amazondrive</w>
+      <w>bootmgfw</w>
+      <w>contimeout</w>
       <w>copyto</w>
+      <w>evtx</w>
+      <w>gamedata</w>
       <w>gdrive</w>
+      <w>hiberfil</w>
       <w>hidrive</w>
       <w>lsjson</w>
+      <w>ntuser</w>
+      <w>pagefile</w>
       <w>pcloud</w>
       <w>playnite</w>
       <w>procs</w>
       <w>putio</w>
       <w>savetracker</w>
+      <w>sentrynative</w>
       <w>uptobox</w>
     </words>
   </dictionary>

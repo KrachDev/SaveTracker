@@ -3,278 +3,10 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:local="clr-namespace:"
              mc:Ignorable="d"
              d:DesignHeight="1520" d:DesignWidth="700"
              Background="#1E1E1E">
-    <UserControl.Resources>
-        <!-- Dark Mode Button Style -->
-        <Style x:Key="DarkButtonStyle" TargetType="Button">
-            <Setter Property="Background" Value="#0E639C"/>
-            <Setter Property="Foreground" Value="#FFFFFF"/>
-            <Setter Property="BorderThickness" Value="0"/>
-            <Setter Property="FontWeight" Value="Medium"/>
-            <Setter Property="Template">
-                <Setter.Value>
-                    <ControlTemplate TargetType="Button">
-                        <Border Background="{TemplateBinding Background}" 
-                                CornerRadius="4"
-                                BorderBrush="{TemplateBinding BorderBrush}"
-                                BorderThickness="{TemplateBinding BorderThickness}">
-                            <ContentPresenter HorizontalAlignment="Center" 
-                                            VerticalAlignment="Center"
-                                            Margin="{TemplateBinding Padding}"/>
-                        </Border>
-                        <ControlTemplate.Triggers>
-                            <Trigger Property="IsMouseOver" Value="True">
-                                <Setter Property="Background" Value="#1177BB"/>
-                            </Trigger>
-                            <Trigger Property="IsPressed" Value="True">
-                                <Setter Property="Background" Value="#0A5A94"/>
-                            </Trigger>
-                            <Trigger Property="IsEnabled" Value="False">
-                                <Setter Property="Background" Value="#404040"/>
-                                <Setter Property="Foreground" Value="#808080"/>
-                            </Trigger>
-                        </ControlTemplate.Triggers>
-                    </ControlTemplate>
-                </Setter.Value>
-            </Setter>
-        </Style>
-         <!-- Dark ComboBox Style -->
-    <Style x:Key="DarkComboBoxStyle" TargetType="{x:Type ComboBox}">
-        <Setter Property="Background" Value="#FF3C3C3C"/>
-        <Setter Property="BorderBrush" Value="#FF555555"/>
-        <Setter Property="Foreground" Value="White"/>
-        <Setter Property="BorderThickness" Value="1"/>
-        <Setter Property="ScrollViewer.CanContentScroll" Value="true"/>
-        <Setter Property="ScrollViewer.PanningMode" Value="Both"/>
-        <Setter Property="Stylus.IsFlicksEnabled" Value="False"/>
-        <Setter Property="Height" Value="30"/>
-        <Setter Property="Padding" Value="8,4"/>
-        <Setter Property="Template">
-            <Setter.Value>
-                <ControlTemplate TargetType="{x:Type ComboBox}">
-                    <Grid x:Name="templateRoot" SnapsToDevicePixels="true">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="*"/>
-                            <ColumnDefinition MinWidth="{DynamicResource {x:Static SystemParameters.VerticalScrollBarWidthKey}}" Width="0"/>
-                        </Grid.ColumnDefinitions>
-                        
-                        <!-- Main Border -->
-                        <Border x:Name="PART_Border" 
-                                Background="{TemplateBinding Background}" 
-                                BorderBrush="{TemplateBinding BorderBrush}" 
-                                BorderThickness="{TemplateBinding BorderThickness}" 
-                                Grid.ColumnSpan="2"
-                                CornerRadius="4"/>
-                        
-                        <!-- Content Presenter -->
-                        <ContentPresenter x:Name="contentPresenter" 
-                                        ContentTemplate="{TemplateBinding SelectionBoxItemTemplate}" 
-                                        Content="{TemplateBinding SelectionBoxItem}" 
-                                        ContentTemplateSelector="{TemplateBinding ItemTemplateSelector}" 
-                                        HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" 
-                                        IsHitTestVisible="false" 
-                                        Margin="{TemplateBinding Padding}" 
-                                        SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" 
-                                        VerticalAlignment="{TemplateBinding VerticalContentAlignment}"/>
-                        
-                        <!-- Dropdown Button -->
-                        <ToggleButton x:Name="toggleButton" 
-                                    Background="Transparent" 
-                                    BorderBrush="Transparent" 
-                                    BorderThickness="0" 
-                                    Grid.Column="1" 
-                                    IsChecked="{Binding IsDropDownOpen, Mode=TwoWay, RelativeSource={RelativeSource TemplatedParent}}" 
-                                    Style="{StaticResource ComboBoxReadonlyToggleButton}"/>
-                        
-                        <!-- Dropdown Arrow -->
-                        <Path x:Name="arrow" 
-                              Data="M 0 2 L 4 6 L 8 2 Z" 
-                              Fill="White" 
-                              HorizontalAlignment="Right" 
-                              Margin="0,0,10,0" 
-                              VerticalAlignment="Center" 
-                              Grid.Column="1"/>
-                        
-                        <!-- Popup -->
-                        <Popup x:Name="PART_Popup" 
-                               AllowsTransparency="true" 
-                               Grid.ColumnSpan="2" 
-                               IsOpen="{Binding IsDropDownOpen, Source={x:Reference Name=toggleButton}}" 
-                               Margin="1" 
-                               PopupAnimation="{DynamicResource {x:Static SystemParameters.ComboBoxPopupAnimationKey}}" 
-                               Placement="Bottom">
-                            
-                            <Border x:Name="dropDownBorder" 
-                                    Background="#FF2D2C2C" 
-                                    BorderBrush="#FF555555" 
-                                    BorderThickness="1"
-                                    CornerRadius="4"
-                                    MinWidth="{Binding ActualWidth, ElementName=templateRoot}" 
-                                    MaxHeight="{TemplateBinding MaxDropDownHeight}">
-                                
-                                <ScrollViewer x:Name="DropDownScrollViewer">
-                                    <Grid x:Name="grid" RenderOptions.ClearTypeHint="Enabled">
-                                        <Canvas x:Name="canvas" HorizontalAlignment="Left" Height="0" VerticalAlignment="Top" Width="0">
-                                            <Rectangle x:Name="opaqueRect" 
-                                                     Fill="{Binding Background, ElementName=dropDownBorder}" 
-                                                     Height="{Binding ActualHeight, ElementName=dropDownBorder}" 
-                                                     Width="{Binding ActualWidth, ElementName=dropDownBorder}"/>
-                                        </Canvas>
-                                        <ItemsPresenter x:Name="ItemsPresenter" 
-                                                      KeyboardNavigation.DirectionalNavigation="Contained" 
-                                                      SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"/>
-                                    </Grid>
-                                </ScrollViewer>
-                            </Border>
-                        </Popup>
-                    </Grid>
-                    
-                    <!-- Triggers for different states -->
-                    <ControlTemplate.Triggers>
-                        <!-- Mouse Over -->
-                        <Trigger Property="IsMouseOver" Value="true">
-                            <Setter Property="Background" TargetName="PART_Border" Value="#FF4A4A4A"/>
-                            <Setter Property="BorderBrush" TargetName="PART_Border" Value="#FF777777"/>
-                        </Trigger>
-                        
-                        <!-- Focused -->
-                        <Trigger Property="IsFocused" Value="true">
-                            <Setter Property="BorderBrush" TargetName="PART_Border" Value="#FF0078D4"/>
-                        </Trigger>
-                        
-                        <!-- Disabled -->
-                        <Trigger Property="IsEnabled" Value="false">
-                            <Setter Property="Background" TargetName="PART_Border" Value="#FF2A2A2A"/>
-                            <Setter Property="BorderBrush" TargetName="PART_Border" Value="#FF333333"/>
-                            <Setter Property="Foreground" Value="#FF666666"/>
-                            <Setter Property="Fill" TargetName="arrow" Value="#FF666666"/>
-                        </Trigger>
-                        
-                        <!-- Dropdown Open -->
-                        <Trigger Property="IsDropDownOpen" Value="true">
-                            <Setter Property="BorderBrush" TargetName="PART_Border" Value="#FF0078D4"/>
-                        </Trigger>
-                    </ControlTemplate.Triggers>
-                </ControlTemplate>
-            </Setter.Value>
-        </Setter>
-    </Style>
-
-    <!-- Toggle Button Style for ComboBox -->
-    <Style x:Key="ComboBoxReadonlyToggleButton" TargetType="{x:Type ToggleButton}">
-        <Setter Property="OverridesDefaultStyle" Value="true"/>
-        <Setter Property="IsTabStop" Value="false"/>
-        <Setter Property="Focusable" Value="false"/>
-        <Setter Property="ClickMode" Value="Press"/>
-        <Setter Property="Template">
-            <Setter.Value>
-                <ControlTemplate TargetType="{x:Type ToggleButton}">
-                    <Border x:Name="templateRoot" 
-                            Background="Transparent" 
-                            BorderBrush="Transparent" 
-                            BorderThickness="0" 
-                            SnapsToDevicePixels="true">
-                    </Border>
-                </ControlTemplate>
-            </Setter.Value>
-        </Setter>
-    </Style>
-
-    <!-- Dark ComboBoxItem Style -->
-    <Style x:Key="DarkComboBoxItemStyle" TargetType="{x:Type ComboBoxItem}">
-        <Setter Property="Background" Value="Transparent"/>
-        <Setter Property="Foreground" Value="White"/>
-        <Setter Property="Padding" Value="8,4"/>
-        <Setter Property="Template">
-            <Setter.Value>
-                <ControlTemplate TargetType="{x:Type ComboBoxItem}">
-                    <Border x:Name="Bd" 
-                            Background="{TemplateBinding Background}" 
-                            BorderBrush="{TemplateBinding BorderBrush}" 
-                            BorderThickness="{TemplateBinding BorderThickness}" 
-                            Padding="{TemplateBinding Padding}" 
-                            SnapsToDevicePixels="true">
-                        <ContentPresenter HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" 
-                                        SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" 
-                                        VerticalAlignment="{TemplateBinding VerticalContentAlignment}"/>
-                    </Border>
-                    <ControlTemplate.Triggers>
-                        <!-- Mouse Over -->
-                        <Trigger Property="IsMouseOver" Value="true">
-                            <Setter Property="Background" TargetName="Bd" Value="#FF404040"/>
-                        </Trigger>
-                        
-                        <!-- Selected -->
-                        <Trigger Property="IsSelected" Value="true">
-                            <Setter Property="Background" TargetName="Bd" Value="#FF0078D4"/>
-                        </Trigger>
-                        
-                        <!-- Disabled -->
-                        <Trigger Property="IsEnabled" Value="false">
-                            <Setter Property="Foreground" Value="#FF666666"/>
-                        </Trigger>
-                    </ControlTemplate.Triggers>
-                </ControlTemplate>
-            </Setter.Value>
-        </Setter>
-    </Style>
-        <!-- Orange Button Style for Download -->
-        <Style x:Key="OrangeButtonStyle" TargetType="Button" BasedOn="{StaticResource DarkButtonStyle}">
-            <Setter Property="Background" Value="#CC7A00"/>
-            <Style.Triggers>
-                <Trigger Property="IsMouseOver" Value="True">
-                    <Setter Property="Background" Value="#E68A00"/>
-                </Trigger>
-                <Trigger Property="IsPressed" Value="True">
-                    <Setter Property="Background" Value="#B36B00"/>
-                </Trigger>
-            </Style.Triggers>
-        </Style>
-
-        <!-- Dark GroupBox Style -->
-        <Style x:Key="DarkGroupBoxStyle" TargetType="GroupBox">
-            <Setter Property="Foreground" Value="#FFFFFF"/>
-            <Setter Property="BorderBrush" Value="#404040"/>
-            <Setter Property="BorderThickness" Value="1"/>
-            <Setter Property="Template">
-                <Setter.Value>
-                    <ControlTemplate TargetType="GroupBox">
-                        <Grid>
-                            <Grid.RowDefinitions>
-                                <RowDefinition Height="Auto"/>
-                                <RowDefinition Height="*"/>
-                            </Grid.RowDefinitions>
-                            <Border Grid.Row="0" 
-                                    Background="#2D2D30" 
-                                    CornerRadius="4,4,0,0"
-                                    BorderBrush="#404040"
-                                    BorderThickness="1,1,1,0">
-                                <ContentPresenter ContentSource="Header" 
-                                                Margin="10,8"/>
-                            </Border>
-                            <Border Grid.Row="1" 
-                                    Background="#252526"
-                                    CornerRadius="0,0,4,4"
-                                    BorderBrush="#404040"
-                                    BorderThickness="1,0,1,1">
-                                <ContentPresenter Margin="{TemplateBinding Padding}"/>
-                            </Border>
-                        </Grid>
-                    </ControlTemplate>
-                </Setter.Value>
-            </Setter>
-        </Style>
-
-        <!-- Dark CheckBox Style -->
-        <Style x:Key="DarkCheckBoxStyle" TargetType="CheckBox">
-            <Setter Property="Foreground" Value="#FFFFFF"/>
-            <Setter Property="Background" Value="#FFFFFF"/>
-            <Setter Property="BorderBrush" Value="#666666"/>
-            <Setter Property="BorderThickness" Value="1"/>
-        </Style>
-    </UserControl.Resources>
 
     <ScrollViewer VerticalScrollBarVisibility="Auto" Background="Transparent">
         <StackPanel Margin="20">
@@ -293,10 +25,404 @@
                 </StackPanel>
             </Border>
             
+             <!--Debug Section -->
+            <GroupBox Header="Debug" Visibility="Collapsed"
+                     Margin="0,0,0,20">
+                <GroupBox.HeaderTemplate>
+                    <DataTemplate>
+                        <TextBlock Text="{Binding}" 
+                                  FontSize="16" 
+                                  FontWeight="SemiBold" 
+                                  Foreground="#4FC3F7"/>
+                    </DataTemplate>
+                </GroupBox.HeaderTemplate>
+                 <StackPanel Margin="15">
+                    <!-- Console Setting -->
+                    <Border Background="#3C3C3C" CornerRadius="4" BorderBrush="#555555" BorderThickness="1">
+                        <StackPanel Margin="15">
+                            <Button Name="Testbtn" Click="TESTBTN_OnClick">TEST</Button>
+                        </StackPanel>
+                    </Border>
+
+                </StackPanel>
+            </GroupBox>
+        <Border Background="#3C3C3C" 
+               CornerRadius="4" 
+               BorderBrush="#555555" 
+               BorderThickness="1" 
+               Margin="0,0,0,15" 
+               Padding="15">
+            <StackPanel>
+              
+                <TextBlock Text="Game" 
+                           Name="GameNameTxt"
+                           FontSize="19" 
+                           FontWeight="Bold" 
+                           FontStyle="Italic"
+                           Foreground="#FFFFFF" 
+                           TextAlignment="Center"/>
+
+            </StackPanel>
+        </Border>
+
+          <!-- Enhanced Game Cloud Overview Section - Playnite Plugin Compatible -->
+<GroupBox Header="Game Cloud Overview" 
+         Margin="0,0,0,20">
+    <GroupBox.HeaderTemplate>
+        <DataTemplate>
+            <DockPanel>
+                <TextBlock Text="☁ " FontSize="16" VerticalAlignment="Center" Foreground="#4FC3F7"/>
+                <TextBlock Text="{Binding}" FontSize="16" FontWeight="SemiBold" VerticalAlignment="Center" Foreground="#4FC3F7"/>
+                <Button Name="RefreshBtn" 
+                        Content="🔄" 
+                        Width="24" Height="24"
+                        HorizontalAlignment="Right"
+                        Margin="10,0,0,0"
+                        ToolTip="Refresh Cloud Data"
+                        Background="Transparent"
+                        BorderThickness="0"
+                        Cursor="Hand"/>
+            </DockPanel>
+        </DataTemplate>
+    </GroupBox.HeaderTemplate>
+    
+    <StackPanel Margin="10">
+        <!-- Sync Status Section -->
+        <Border Background="#3C3C3C" 
+               CornerRadius="4" 
+               BorderBrush="#555555" 
+               BorderThickness="1" 
+               Margin="0,0,0,15" 
+               Padding="15">
+            <StackPanel>
+                <!-- Stats Grid -->
+                <UniformGrid Columns="3" Rows="2">
+                    <!-- Last Sync -->
+                    <StackPanel Margin="0,0,10,15">
+                        <TextBlock Text="Last Cloud Sync" 
+                                  FontSize="11" 
+                                  FontWeight="Medium"
+                                  Foreground="#CCCCCC"
+                                  Opacity="0.9"
+                                  Margin="0,0,0,4"/>
+                        <TextBlock Name="LastSyncTxt"
+                                  Text="Never" 
+                                  FontSize="13" 
+                                  FontWeight="SemiBold"
+                                  Foreground="#FFFFFF"/>
+                    </StackPanel>
+
+                    <!-- Files Count -->
+                    <StackPanel Margin="0,0,10,15">
+                        <TextBlock Text="Files Tracked" 
+                                  FontSize="11" 
+                                  FontWeight="Medium"
+                                  Foreground="#CCCCCC"
+                                  Opacity="0.9"
+                                  Margin="0,0,0,4"/>
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Name="FilesCountTxt"
+                                      Text="0" 
+                                      FontSize="13" 
+                                      FontWeight="SemiBold"
+                                      Foreground="#FFFFFF"/>
+                            <TextBlock Text=" files" 
+                                      FontSize="11" 
+                                      Foreground="#CCCCCC"
+                                      Opacity="0.9"
+                                      VerticalAlignment="Bottom"
+                                      Margin="4,0,0,0"/>
+                        </StackPanel>
+                    </StackPanel>
+
+                    <!-- Total Size -->
+                    <StackPanel Margin="0,0,0,15">
+                        <TextBlock Text="Total Size" 
+                                  FontSize="11" 
+                                  FontWeight="Medium"
+                                  Foreground="#CCCCCC"
+                                  Opacity="0.9"
+                                  Margin="0,0,0,4"/>
+                        <TextBlock Name="TotalSizeTxt"
+                                  Text="0 KB" 
+                                  FontSize="13" 
+                                  FontWeight="SemiBold"
+                                  Foreground="#FFFFFF"/>
+                    </StackPanel>
+
+                    <!-- Newest Save -->
+                    <StackPanel Margin="0,0,10,0">
+                        <TextBlock Text="Newest Save" 
+                                  FontSize="11" 
+                                  FontWeight="Medium"
+                                  Foreground="#CCCCCC"
+                                  Opacity="0.9"
+                                  Margin="0,0,0,4"/>
+                        <TextBlock Name="NewestSaveTxt"
+                                  Text="None" 
+                                  FontSize="13" 
+                                  FontWeight="SemiBold"
+                                  Foreground="#FFFFFF"/>
+                    </StackPanel>
+
+                    <!-- Oldest Save -->
+                    <StackPanel Margin="0,0,10,0">
+                        <TextBlock Text="Oldest Save" 
+                                  FontSize="11" 
+                                  FontWeight="Medium"
+                                  Foreground="#CCCCCC"
+                                  Opacity="0.9"
+                                  Margin="0,0,0,4"/>
+                        <TextBlock Name="OldestSaveTxt"
+                                  Text="None" 
+                                  FontSize="13" 
+                                  FontWeight="SemiBold"
+                                  Foreground="#FFFFFF"/>
+                    </StackPanel>
+                </UniformGrid>
+                
+                <!-- Header with Status Indicator -->
+                <DockPanel Margin="0,0,0,15">
+                    <Button Name="SyncNowBtn"
+                            Content="SYNC NOW"
+                            HorizontalAlignment="Right"
+                            Padding="12,6"
+                            MinWidth="80"
+                            Click="UploadButton_Click"/>
+                </DockPanel>
+            </StackPanel>
+        </Border>
+
+        <!-- Tracking Settings Section -->
+        <Border Background="#3C3C3C" 
+               CornerRadius="4" 
+               BorderBrush="#555555" 
+               BorderThickness="1" 
+               Margin="0,0,0,15" 
+               Padding="15">
+            <StackPanel>
+                <TextBlock Text="Tracking Settings" 
+                          FontSize="14" 
+                          FontWeight="SemiBold"
+                          Foreground="#FFFFFF"
+                          Margin="0,0,0,15"/>
+                
+                <UniformGrid Columns="3">
+                    <CheckBox Name="CanTrackBox" 
+                             Content="Enable Tracking" 
+                             Foreground="#FFFFFF"
+                             IsChecked="True"
+                             Margin="0,0,10,0"
+                             Click="CanTrackBOX_OnClick"/>
+                    
+                    <CheckBox Name="CanUploadBox" 
+                             Content="Auto Sync" 
+                             Foreground="#FFFFFF"
+                             IsChecked="True"
+                             Margin="0,0,10,0"
+                             Click="CanUploadBOX_OnClick"/>
+                    
+                    <DockPanel>
+                        <ComboBox Name="PerGameProvider" 
+                                  SelectionChanged="PerGameProvider_OnSelectionChanged" 
+                                  SelectedIndex="0" 
+                                  Margin="10,0,0,0" 
+                                  Height="30">
+                            <ComboBoxItem Content="Global"                  Tag="{x:Static local:CloudProvider.Global}" />
+                            <ComboBoxItem Content="Google Drive (15GB Free)" Tag="{x:Static local:CloudProvider.GoogleDrive}" />
+                            <ComboBoxItem Content="OneDrive (5GB Free)"      Tag="{x:Static local:CloudProvider.OneDrive}" />
+                            <ComboBoxItem Content="Dropbox (2GB Free)"       Tag="{x:Static local:CloudProvider.Dropbox}" />
+                            <ComboBoxItem Content="pCloud (10GB Free)"       Tag="{x:Static local:CloudProvider.Pcloud}" />
+                            <ComboBoxItem Content="Box (10GB Free)"          Tag="{x:Static local:CloudProvider.Box}" />
+                            <ComboBoxItem Content="Amazon Drive (Premium)"   Tag="{x:Static local:CloudProvider.AmazonDrive}" />
+                            <ComboBoxItem Content="Yandex (10GB Free)"       Tag="{x:Static local:CloudProvider.Yandex}" />
+                            <ComboBoxItem Content="Put.io (Premium)"         Tag="{x:Static local:CloudProvider.PutIo}" />
+                            <ComboBoxItem Content="HiDrive (5GB Free)"       Tag="{x:Static local:CloudProvider.HiDrive}" />
+                            <ComboBoxItem Content="Uptobox (Premium)"        Tag="{x:Static local:CloudProvider.Uptobox}" />
+                        </ComboBox>
+
+                        <TextBlock Text="Provider Selector" 
+                                   Foreground="#FFFFFF"
+                                   Margin="10,0,0,0"
+                                   VerticalAlignment="Center"/>
+                    </DockPanel>
+                </UniformGrid>
+            </StackPanel>
+        </Border>
+
+        <!-- Files Management Section -->
+        <Border Name="MainBoarder" 
+               Background="#3C3C3C" 
+               CornerRadius="4" 
+               BorderBrush="#555555" 
+               BorderThickness="1" 
+               Margin="0,0,0,15" 
+               Padding="15"
+               Visibility="Visible">
+            <StackPanel>
+                <!-- Files and Blacklist Grid -->
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+
+                    <!-- Tracked Files Section -->
+                    <Border Grid.Column="0" 
+                           Background="#2A2A2A"
+                           BorderBrush="#555555"
+                           BorderThickness="1" 
+                           CornerRadius="4" 
+                           Margin="0,0,5,0"
+                           Padding="10">
+                        <StackPanel>
+                            <DockPanel Margin="0,0,0,10">
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock Text="📁" FontSize="14" VerticalAlignment="Center"/>
+                                    <TextBlock Text="Tracked Files" 
+                                              FontWeight="SemiBold" 
+                                              FontSize="13"
+                                              Foreground="#FFFFFF"
+                                              Margin="5,0,0,0"
+                                              VerticalAlignment="Center"/>
+                                </StackPanel>
+                                
+                                <TextBlock Name="TrackedCountTxt"
+                                          Text="(0)" 
+                                          FontSize="11"
+                                          Foreground="#CCCCCC"
+                                          Opacity="0.9"
+                                          HorizontalAlignment="Right"
+                                          VerticalAlignment="Center"/>
+                            </DockPanel>
+                            
+                            <ListBox Name="FilesList" 
+                                    Height="200"
+                                    Background="#1E1E1E"
+                                    BorderBrush="#555555"
+                                    ScrollViewer.HorizontalScrollBarVisibility="Auto"
+                                    ScrollViewer.VerticalScrollBarVisibility="Auto"
+                                    BorderThickness="1">
+                                <ListBox.ItemContainerStyle>
+                                    <Style TargetType="ListBoxItem">
+                                        <Setter Property="Padding" Value="5"/>
+                                        <Setter Property="Margin" Value="0,1"/>
+                                        <Setter Property="Foreground" Value="#FFFFFF"/>
+                                        <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+                                    </Style>
+                                </ListBox.ItemContainerStyle>
+                            </ListBox>
+                        </StackPanel>
+                    </Border>
+
+                    <!-- Separator -->
+                    <Border Grid.Column="1" 
+                           Width="2" 
+                           Background="#555555"
+                           Opacity="0.6"
+                           CornerRadius="1"
+                           Margin="5,0"/>
+
+                    <!-- Blacklisted Files Section -->
+                    <Border Grid.Column="2" 
+                           Background="#2A2A2A"
+                           BorderBrush="#555555"
+                           BorderThickness="1" 
+                           CornerRadius="4" 
+                           Margin="5,0,0,0"
+                           Padding="10">
+                        <StackPanel>
+                            <DockPanel Margin="0,0,0,10">
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock Text="🚫" FontSize="14" VerticalAlignment="Center"/>
+                                    <TextBlock Text="Blacklisted Files" 
+                                              FontWeight="SemiBold" 
+                                              FontSize="13"
+                                              Foreground="#FFFFFF"
+                                              Margin="5,0,0,0"
+                                              VerticalAlignment="Center"/>
+                                </StackPanel>
+                                
+                                <TextBlock Name="BlacklistedCountTxt"
+                                          Text="(0)" 
+                                          FontSize="11"
+                                          Foreground="#CCCCCC"
+                                          Opacity="0.9"
+                                          HorizontalAlignment="Right"
+                                          VerticalAlignment="Center"/>
+                            </DockPanel>
+                            
+                            <ListBox Name="BlackList" 
+                                    Height="200"
+                                    Background="#1E1E1E"
+                                    BorderBrush="#555555"
+                                    ScrollViewer.HorizontalScrollBarVisibility="Auto"
+                                    ScrollViewer.VerticalScrollBarVisibility="Auto"
+                                    BorderThickness="1">
+                                <ListBox.ItemContainerStyle>
+                                    <Style TargetType="ListBoxItem">
+                                        <Setter Property="Padding" Value="5"/>
+                                        <Setter Property="Margin" Value="0,1"/>
+                                        <Setter Property="Foreground" Value="#FFFFFF"/>
+                                        <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+                                    </Style>
+                                </ListBox.ItemContainerStyle>
+                            </ListBox>
+                        </StackPanel>
+                    </Border>
+                </Grid>
+                
+                <!-- Quick Actions -->
+                <DockPanel Margin="0,15,0,0">
+                    <TextBlock Text="💡 Tip: Double-click files to move between tracked and blacklisted" 
+                              FontSize="11" 
+                              Foreground="#CCCCCC"
+                              Opacity="0.8"
+                              VerticalAlignment="Center"/>
+                </DockPanel>
+            </StackPanel>
+        </Border>
+
+        <!-- Progress Indicator for Sync Operations -->
+        <Border Name="SyncProgressCard" 
+               Background="#3C3C3C" 
+               CornerRadius="4" 
+               BorderBrush="#555555" 
+               BorderThickness="1" 
+               Padding="15"
+               Visibility="Collapsed">
+            <StackPanel>
+                <DockPanel Margin="0,0,0,10">
+                    <TextBlock Text="🔄 Syncing..." 
+                              FontSize="14" 
+                              FontWeight="SemiBold"
+                              Foreground="#FFFFFF"
+                              VerticalAlignment="Center"/>
+                    
+                    <Button Name="CancelSyncBtn"
+                           Content="Cancel"
+                           HorizontalAlignment="Right"
+                           Padding="8,4"/>
+                </DockPanel>
+                
+                <ProgressBar Name="SyncProgressBar"
+                            IsIndeterminate="True"
+                            Height="6"
+                            Margin="0,0,0,10"/>
+                
+                <TextBlock Name="SyncStatusText"
+                          Text="Connecting to cloud service..."
+                          FontSize="12"
+                          Foreground="#CCCCCC"
+                          Opacity="0.9"/>
+            </StackPanel>
+        </Border>
+    </StackPanel>
+</GroupBox>
             
              <!-- Settings Section -->
             <GroupBox Header="Provider Settings" 
-                     Style="{StaticResource DarkGroupBoxStyle}"
                      Margin="0,0,0,20">
                 <GroupBox.HeaderTemplate>
                     <DataTemplate>
@@ -347,7 +473,6 @@
 
             <!-- Settings Section -->
             <GroupBox Header="General Settings" 
-                     Style="{StaticResource DarkGroupBoxStyle}"
                      Margin="0,0,0,20">
                 <GroupBox.HeaderTemplate>
                     <DataTemplate>
@@ -386,8 +511,8 @@
                     <Border Background="#3C3C3C" CornerRadius="4" BorderBrush="#555555" BorderThickness="1">
                         <StackPanel Margin="15">
                             <DockPanel>
-                                <CheckBox Name="Track3rdBox" 
-                                          IsChecked="{Binding Settings.Track3rdParty}"
+                                <CheckBox Name="Track3RdBox" 
+                                          IsChecked="{Binding Settings.Track3RdParty}"
                                           VerticalAlignment="Center"
                                           Foreground="White"
                                           DockPanel.Dock="Left"/>
@@ -433,8 +558,31 @@
                     <Border Background="#3C3C3C" CornerRadius="4" BorderBrush="#555555" BorderThickness="1">
                         <StackPanel Margin="15">
                             <DockPanel>
+                                <CheckBox Name="CheckSaves" 
+                                          IsChecked="{Binding Settings.CheckRemoteSave}"
+                                          VerticalAlignment="Center"
+                                          Foreground="White"
+
+                                          DockPanel.Dock="Left"/>
+                                <TextBlock Text="Detect cloud saves when adding new games"
+                                           FontSize="14" 
+                                           FontWeight="Medium"
+                                           Foreground="#FFFFFF"
+                                           Margin="10,0,0,0"
+                                           VerticalAlignment="Center"/>
+                            </DockPanel>
+                            <TextBlock Text="Automatically scan cloud storage for existing save data when new games are detected&#x0A;(Only occurs when clicking the side panel item)" 
+                                       Foreground="#CCCCCC"
+                                       Margin="25,8,0,0"
+                                       
+                                       TextWrapping="Wrap"/>
+                        </StackPanel>
+                    </Border>
+                    <Border Background="#3C3C3C" CornerRadius="4" BorderBrush="#555555" BorderThickness="1">
+                        <StackPanel Margin="15">
+                            <DockPanel>
                                 <CheckBox Name="ShowConsoleBox" 
-                                          IsChecked="{Binding Settings.ShowCosnoleOption}"
+                                          IsChecked="{Binding Settings.ShowConsoleOption}"
                                           VerticalAlignment="Center"
                                           Foreground="White"
 
@@ -453,12 +601,79 @@
                                        TextWrapping="Wrap"/>
                         </StackPanel>
                     </Border>
+                    <Border Background="#3C3C3C" CornerRadius="4" BorderBrush="#555555" BorderThickness="1" Visibility="Collapsed">
+                        <StackPanel Margin="15">
+                            <DockPanel>
+                                <CheckBox Name="EncryptConfigsBox" 
+                                          IsChecked="{Binding Settings.EncryptConfigs}"
+                                          VerticalAlignment="Center"
+                                          Foreground="White"
+
+                                          DockPanel.Dock="Left"/>
+                                <TextBlock Text="Config Encryption" 
+                                           FontSize="14" 
+                                           FontWeight="Medium"
+                                           Foreground="#FFFFFF"
+                                           Margin="10,0,0,0"
+                                           VerticalAlignment="Center"/>
+                            </DockPanel>
+                            <TextBlock Text="Encrypt Rclone Authentication Files" 
+                                       FontSize="12"
+                                       Foreground="#CCCCCC"
+                                       Margin="25,8,0,0"
+                                       TextWrapping="Wrap"/>
+                        </StackPanel>
+                    </Border>
+                    <Border Background="#3C3C3C" CornerRadius="4" BorderBrush="#555555" BorderThickness="1">
+                        <StackPanel Margin="15">
+                            <DockPanel>
+                                <CheckBox Name="ShowUploadBox" 
+                                          IsChecked="{Binding Settings.ShowUpload}"
+                                          VerticalAlignment="Center"
+                                          Foreground="White"
+
+                                          DockPanel.Dock="Left"/>
+                                <TextBlock Text="Show Upload Window" 
+                                           FontSize="14" 
+                                           FontWeight="Medium"
+                                           Foreground="#FFFFFF"
+                                           Margin="10,0,0,0"
+                                           VerticalAlignment="Center"/>
+                            </DockPanel>
+                            <TextBlock Text="Show upload window to track progress" 
+                                       FontSize="12"
+                                       Foreground="#CCCCCC"
+                                       Margin="25,8,0,0"
+                                       TextWrapping="Wrap"/>
+                        </StackPanel>
+                    </Border> <Border Background="#3C3C3C" CornerRadius="4" BorderBrush="#555555" BorderThickness="1">
+                        <StackPanel Margin="15">
+                            <DockPanel>
+                                <CheckBox Name="ShowDownloadBox" 
+                                          IsChecked="{Binding Settings.ShowDownload}"
+                                          VerticalAlignment="Center"
+                                          Foreground="White"
+
+                                          DockPanel.Dock="Left"/>
+                                <TextBlock Text="Show Download Window" 
+                                           FontSize="14" 
+                                           FontWeight="Medium"
+                                           Foreground="#FFFFFF"
+                                           Margin="10,0,0,0"
+                                           VerticalAlignment="Center"/>
+                            </DockPanel>
+                            <TextBlock Text="Show download window to track progress"
+                                       FontSize="12"
+                                       Foreground="#CCCCCC"
+                                       Margin="25,8,0,0"
+                                       TextWrapping="Wrap"/>
+                        </StackPanel>
+                    </Border>
                 </StackPanel>
             </GroupBox>
             
              <!-- Tracker Settings Section -->
             <GroupBox Header="Tracker Settings" 
-                     Style="{StaticResource DarkGroupBoxStyle}"
                      Margin="0,0,0,20">
                 <GroupBox.HeaderTemplate>
                     <DataTemplate>
@@ -523,7 +738,6 @@
             
             <!-- Actions Section -->
             <GroupBox Header="Save Management" 
-                     Style="{StaticResource DarkGroupBoxStyle}"
                      Margin="0,0,0,20">
                 <GroupBox.HeaderTemplate>
                     <DataTemplate>
@@ -565,7 +779,6 @@
                                       Margin="0,0,0,15"/>
                             <Button Name="UploadButton"
                                    Content="Upload Now"
-                                   Style="{StaticResource DarkButtonStyle}"
                                    Height="35"
                                    Click="UploadButton_Click"/>
                         </StackPanel>
@@ -594,7 +807,6 @@
                                       Margin="0,0,0,15"/>
                             <Button Name="DownloadButton"
                                    Content="Download Now"
-                                   Style="{StaticResource OrangeButtonStyle}"
                                    Height="35"
                                    Click="DownloadButton_Click"/>
                         </StackPanel>
@@ -607,8 +819,7 @@
 
             <!-- Save Section -->
             <GroupBox Header="Save" 
-                      Style="{StaticResource DarkGroupBoxStyle}"
-                      Margin="0,0,0,20">
+                       Margin="0,0,0,20">
                 <GroupBox.HeaderTemplate>
                     <DataTemplate>
                         <TextBlock Text="{Binding}" 

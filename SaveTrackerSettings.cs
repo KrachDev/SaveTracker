@@ -1,62 +1,66 @@
 ﻿using Playnite.SDK;
 using Playnite.SDK.Data;
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace SaveTracker
 {
     public class SaveTrackerSettings : ObservableObject
     {
-        private bool showscosnoleoption;
-        private bool autosync = true;
-        private bool tackfiles = true;
-        private bool trackreads;
-        private bool trackwrites = true;
-        private bool optionThatWontBeSaved;
-        private bool track3rdparty = false;
-        private CloudProvider selectedProvider = CloudProvider.GoogleDrive;
+        private bool _showscosnoleoption;
+        private bool _autosync = true;
+        private bool _trackfiles = true;
+        private bool _checkremotesave = true;
+        private bool _trackreads;
+        private bool _trackwrites = true;
+        private bool _optionThatWontBeSaved;
+        private bool _track3Rdparty;
+        private bool _showupload = true;
+        private bool _showdownload = true;
+        private bool _encryptconfigs = true;
+        private CloudProvider _selectedProvider = CloudProvider.GoogleDrive;
 
         public CloudProvider SelectedProvider 
         { 
-            get => selectedProvider; 
-            set => SetValue(ref selectedProvider, value); 
+            get => _selectedProvider; 
+            set => SetValue(ref _selectedProvider, value); 
         }
         public int SelectedProviderIndex
         {
-            get => (int)selectedProvider;
+            get => (int)_selectedProvider;
             set 
             { 
                 SelectedProvider = (CloudProvider)value;
                 OnPropertyChanged(); // or however you handle property change notifications
             }
         }
-        public bool Track3rdParty { get => track3rdparty; set => SetValue(ref track3rdparty, value); }
-        public bool ShowCosnoleOption { get => showscosnoleoption; set => SetValue(ref showscosnoleoption, value); }
-        public bool TrackWrites { get => trackwrites; set => SetValue(ref trackwrites, value); }
-        public bool TrackReads { get => trackreads; set => SetValue(ref trackreads, value); }
-        public bool AutoSyncOption { get => autosync; set => SetValue(ref autosync, value); }
-        public bool TrackFiles { get => tackfiles; set => SetValue(ref tackfiles, value); }
+        public bool Track3RdParty { get => _track3Rdparty; set => SetValue(ref _track3Rdparty, value); }
+        public bool ShowConsoleOption { get => _showscosnoleoption; set => SetValue(ref _showscosnoleoption, value); }
+        public bool TrackWrites { get => _trackwrites; set => SetValue(ref _trackwrites, value); }
+        public bool TrackReads { get => _trackreads; set => SetValue(ref _trackreads, value); }
+        public bool AutoSyncOption { get => _autosync; set => SetValue(ref _autosync, value); }
+        public bool TrackFiles { get => _trackfiles; set => SetValue(ref _trackfiles, value); }
+        public bool CheckRemoteSave { get => _checkremotesave; set => SetValue(ref _checkremotesave, value); }
+        public bool ShowUpload { get => _showupload; set => SetValue(ref _showupload, value); }
+        public bool ShowDownload { get => _showdownload; set => SetValue(ref _showdownload, value); }
+        public bool EncryptConfigs { get => _encryptconfigs; set => SetValue(ref _encryptconfigs, value); }
         // Playnite serializes settings object to a JSON object and saves it as text file.
         // If you want to exclude some property from being saved then use `JsonDontSerialize` ignore attribute.
         [DontSerialize]
-        public bool OptionThatWontBeSaved { get => optionThatWontBeSaved; set => SetValue(ref optionThatWontBeSaved, value); }
+        public bool OptionThatWontBeSaved { get => _optionThatWontBeSaved; set => SetValue(ref _optionThatWontBeSaved, value); }
     }
 
     public class SaveTrackerSettingsViewModel : ObservableObject, ISettings
     {
-        private readonly SaveTracker plugin;
-        private SaveTrackerSettings editingClone { get; set; }
+        private readonly SaveTracker _plugin;
+        private SaveTrackerSettings EditingClone { get; set; }
 
-        private SaveTrackerSettings settings;
+        private SaveTrackerSettings _settings;
         public SaveTrackerSettings Settings
         {
-            get => settings;
+            get => _settings;
             set
             {
-                settings = value;
+                _settings = value;
                 OnPropertyChanged();
             }
         }
@@ -64,7 +68,7 @@ namespace SaveTracker
         public SaveTrackerSettingsViewModel(SaveTracker plugin)
         {
             // Injecting your plugin instance is required for Save/Load method because Playnite saves data to a location based on what plugin requested the operation.
-            this.plugin = plugin;
+            this._plugin = plugin;
 
             // Load saved settings.
             var savedSettings = plugin.LoadPluginSettings<SaveTrackerSettings>();
@@ -83,21 +87,21 @@ namespace SaveTracker
         public void BeginEdit()
         {
             // Code executed when settings view is opened and user starts editing values.
-            editingClone = Serialization.GetClone(Settings);
+            EditingClone = Serialization.GetClone(Settings);
         }
 
         public void CancelEdit()
         {
             // Code executed when user decides to cancel any changes made since BeginEdit was called.
             // This method should revert any changes made to Option1 and Option2.
-            Settings = editingClone;
+            Settings = EditingClone;
         }
 
         public void EndEdit()
         {
             // Code executed when user decides to confirm changes made since BeginEdit was called.
             // This method should save settings made to Option1 and Option2.
-            plugin.SavePluginSettings(Settings);
+            _plugin.SavePluginSettings(Settings);
         }
 
         public bool VerifySettings(out List<string> errors)

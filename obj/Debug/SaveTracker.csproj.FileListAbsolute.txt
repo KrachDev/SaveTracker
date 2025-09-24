@@ -1,102 +1,106 @@
-C:\Users\Krach\RiderProjects\SaveTracker\bin\Debug\TraceReloggerLib.dll
-C:\Users\Krach\RiderProjects\SaveTracker\bin\Debug\Dia2Lib.dll
-C:\Users\Krach\RiderProjects\SaveTracker\bin\Debug\x86\KernelTraceControl.dll
-C:\Users\Krach\RiderProjects\SaveTracker\bin\Debug\x86\KernelTraceControl.Win61.dll
-C:\Users\Krach\RiderProjects\SaveTracker\bin\Debug\x86\msdia140.dll
-C:\Users\Krach\RiderProjects\SaveTracker\bin\Debug\amd64\KernelTraceControl.dll
-C:\Users\Krach\RiderProjects\SaveTracker\bin\Debug\amd64\msdia140.dll
-C:\Users\Krach\RiderProjects\SaveTracker\bin\Debug\arm64\KernelTraceControl.dll
-C:\Users\Krach\RiderProjects\SaveTracker\bin\Debug\arm64\msdia140.dll
-C:\Users\Krach\RiderProjects\SaveTracker\bin\Debug\extension.yaml
-C:\Users\Krach\RiderProjects\SaveTracker\bin\Debug\Localization\en_US.xaml
-C:\Users\Krach\RiderProjects\SaveTracker\bin\Debug\SaveTracker.dll.config
-C:\Users\Krach\RiderProjects\SaveTracker\bin\Debug\SaveTracker.dll
-C:\Users\Krach\RiderProjects\SaveTracker\bin\Debug\SaveTracker.pdb
-C:\Users\Krach\RiderProjects\SaveTracker\bin\Debug\Newtonsoft.Json.dll
-C:\Users\Krach\RiderProjects\SaveTracker\bin\Debug\Playnite.SDK.dll
-C:\Users\Krach\RiderProjects\SaveTracker\bin\Debug\Microsoft.Bcl.AsyncInterfaces.dll
-C:\Users\Krach\RiderProjects\SaveTracker\bin\Debug\Microsoft.Diagnostics.FastSerialization.dll
-C:\Users\Krach\RiderProjects\SaveTracker\bin\Debug\Microsoft.Diagnostics.NETCore.Client.dll
-C:\Users\Krach\RiderProjects\SaveTracker\bin\Debug\Microsoft.Diagnostics.Tracing.TraceEvent.dll
-C:\Users\Krach\RiderProjects\SaveTracker\bin\Debug\Microsoft.Extensions.Configuration.Abstractions.dll
-C:\Users\Krach\RiderProjects\SaveTracker\bin\Debug\Microsoft.Extensions.Configuration.Binder.dll
-C:\Users\Krach\RiderProjects\SaveTracker\bin\Debug\Microsoft.Extensions.Configuration.dll
-C:\Users\Krach\RiderProjects\SaveTracker\bin\Debug\Microsoft.Extensions.DependencyInjection.Abstractions.dll
-C:\Users\Krach\RiderProjects\SaveTracker\bin\Debug\Microsoft.Extensions.DependencyInjection.dll
-C:\Users\Krach\RiderProjects\SaveTracker\bin\Debug\Microsoft.Extensions.Diagnostics.Abstractions.dll
-C:\Users\Krach\RiderProjects\SaveTracker\bin\Debug\Microsoft.Extensions.Diagnostics.dll
-C:\Users\Krach\RiderProjects\SaveTracker\bin\Debug\Microsoft.Extensions.Logging.Abstractions.dll
-C:\Users\Krach\RiderProjects\SaveTracker\bin\Debug\Microsoft.Extensions.Logging.dll
-C:\Users\Krach\RiderProjects\SaveTracker\bin\Debug\Microsoft.Extensions.Options.ConfigurationExtensions.dll
-C:\Users\Krach\RiderProjects\SaveTracker\bin\Debug\Microsoft.Extensions.Options.dll
-C:\Users\Krach\RiderProjects\SaveTracker\bin\Debug\Microsoft.Extensions.Primitives.dll
-C:\Users\Krach\RiderProjects\SaveTracker\bin\Debug\Microsoft.Win32.Registry.dll
-C:\Users\Krach\RiderProjects\SaveTracker\bin\Debug\SharpVectors.Converters.Wpf.dll
-C:\Users\Krach\RiderProjects\SaveTracker\bin\Debug\SharpVectors.Core.dll
-C:\Users\Krach\RiderProjects\SaveTracker\bin\Debug\SharpVectors.Css.dll
-C:\Users\Krach\RiderProjects\SaveTracker\bin\Debug\SharpVectors.Dom.dll
-C:\Users\Krach\RiderProjects\SaveTracker\bin\Debug\SharpVectors.Model.dll
-C:\Users\Krach\RiderProjects\SaveTracker\bin\Debug\SharpVectors.Rendering.Wpf.dll
-C:\Users\Krach\RiderProjects\SaveTracker\bin\Debug\SharpVectors.Runtime.Wpf.dll
-C:\Users\Krach\RiderProjects\SaveTracker\bin\Debug\System.Buffers.dll
-C:\Users\Krach\RiderProjects\SaveTracker\bin\Debug\System.Collections.Immutable.dll
-C:\Users\Krach\RiderProjects\SaveTracker\bin\Debug\System.Diagnostics.DiagnosticSource.dll
-C:\Users\Krach\RiderProjects\SaveTracker\bin\Debug\System.Memory.dll
-C:\Users\Krach\RiderProjects\SaveTracker\bin\Debug\System.Numerics.Vectors.dll
-C:\Users\Krach\RiderProjects\SaveTracker\bin\Debug\System.Reflection.Metadata.dll
-C:\Users\Krach\RiderProjects\SaveTracker\bin\Debug\System.Reflection.TypeExtensions.dll
-C:\Users\Krach\RiderProjects\SaveTracker\bin\Debug\System.Runtime.CompilerServices.Unsafe.dll
-C:\Users\Krach\RiderProjects\SaveTracker\bin\Debug\System.Security.AccessControl.dll
-C:\Users\Krach\RiderProjects\SaveTracker\bin\Debug\System.Security.Principal.Windows.dll
-C:\Users\Krach\RiderProjects\SaveTracker\bin\Debug\System.Text.Encodings.Web.dll
-C:\Users\Krach\RiderProjects\SaveTracker\bin\Debug\System.Text.Json.dll
-C:\Users\Krach\RiderProjects\SaveTracker\bin\Debug\System.Threading.Tasks.Extensions.dll
-C:\Users\Krach\RiderProjects\SaveTracker\bin\Debug\System.ValueTuple.dll
-C:\Users\Krach\RiderProjects\SaveTracker\bin\Debug\Microsoft.Bcl.AsyncInterfaces.xml
-C:\Users\Krach\RiderProjects\SaveTracker\bin\Debug\Microsoft.Diagnostics.FastSerialization.xml
-C:\Users\Krach\RiderProjects\SaveTracker\bin\Debug\Microsoft.Diagnostics.NETCore.Client.xml
-C:\Users\Krach\RiderProjects\SaveTracker\bin\Debug\Microsoft.Diagnostics.Tracing.TraceEvent.xml
-C:\Users\Krach\RiderProjects\SaveTracker\bin\Debug\Microsoft.Extensions.Configuration.xml
-C:\Users\Krach\RiderProjects\SaveTracker\bin\Debug\Microsoft.Extensions.Configuration.Abstractions.xml
-C:\Users\Krach\RiderProjects\SaveTracker\bin\Debug\Microsoft.Extensions.Configuration.Binder.xml
-C:\Users\Krach\RiderProjects\SaveTracker\bin\Debug\Microsoft.Extensions.DependencyInjection.xml
-C:\Users\Krach\RiderProjects\SaveTracker\bin\Debug\Microsoft.Extensions.DependencyInjection.Abstractions.xml
-C:\Users\Krach\RiderProjects\SaveTracker\bin\Debug\Microsoft.Extensions.Diagnostics.xml
-C:\Users\Krach\RiderProjects\SaveTracker\bin\Debug\Microsoft.Extensions.Diagnostics.Abstractions.xml
-C:\Users\Krach\RiderProjects\SaveTracker\bin\Debug\Microsoft.Extensions.Logging.xml
-C:\Users\Krach\RiderProjects\SaveTracker\bin\Debug\Microsoft.Extensions.Logging.Abstractions.xml
-C:\Users\Krach\RiderProjects\SaveTracker\bin\Debug\Microsoft.Extensions.Options.xml
-C:\Users\Krach\RiderProjects\SaveTracker\bin\Debug\Microsoft.Extensions.Options.ConfigurationExtensions.xml
-C:\Users\Krach\RiderProjects\SaveTracker\bin\Debug\Microsoft.Extensions.Primitives.xml
-C:\Users\Krach\RiderProjects\SaveTracker\bin\Debug\Microsoft.Win32.Registry.xml
-C:\Users\Krach\RiderProjects\SaveTracker\bin\Debug\SharpVectors.Converters.Wpf.xml
-C:\Users\Krach\RiderProjects\SaveTracker\bin\Debug\SharpVectors.Core.xml
-C:\Users\Krach\RiderProjects\SaveTracker\bin\Debug\SharpVectors.Css.xml
-C:\Users\Krach\RiderProjects\SaveTracker\bin\Debug\SharpVectors.Dom.xml
-C:\Users\Krach\RiderProjects\SaveTracker\bin\Debug\SharpVectors.Model.xml
-C:\Users\Krach\RiderProjects\SaveTracker\bin\Debug\SharpVectors.Rendering.Wpf.xml
-C:\Users\Krach\RiderProjects\SaveTracker\bin\Debug\SharpVectors.Runtime.Wpf.xml
-C:\Users\Krach\RiderProjects\SaveTracker\bin\Debug\System.Buffers.xml
-C:\Users\Krach\RiderProjects\SaveTracker\bin\Debug\System.Collections.Immutable.xml
-C:\Users\Krach\RiderProjects\SaveTracker\bin\Debug\System.Diagnostics.DiagnosticSource.xml
-C:\Users\Krach\RiderProjects\SaveTracker\bin\Debug\System.Memory.xml
-C:\Users\Krach\RiderProjects\SaveTracker\bin\Debug\System.Numerics.Vectors.xml
-C:\Users\Krach\RiderProjects\SaveTracker\bin\Debug\System.Reflection.Metadata.xml
-C:\Users\Krach\RiderProjects\SaveTracker\bin\Debug\System.Reflection.TypeExtensions.xml
-C:\Users\Krach\RiderProjects\SaveTracker\bin\Debug\System.Runtime.CompilerServices.Unsafe.xml
-C:\Users\Krach\RiderProjects\SaveTracker\bin\Debug\System.Security.AccessControl.xml
-C:\Users\Krach\RiderProjects\SaveTracker\bin\Debug\System.Security.Principal.Windows.xml
-C:\Users\Krach\RiderProjects\SaveTracker\bin\Debug\System.Text.Encodings.Web.xml
-C:\Users\Krach\RiderProjects\SaveTracker\bin\Debug\System.Text.Json.xml
-C:\Users\Krach\RiderProjects\SaveTracker\bin\Debug\System.Threading.Tasks.Extensions.xml
-C:\Users\Krach\RiderProjects\SaveTracker\bin\Debug\System.ValueTuple.xml
-C:\Users\Krach\RiderProjects\SaveTracker\obj\Debug\SaveTracker.csproj.AssemblyReference.cache
-C:\Users\Krach\RiderProjects\SaveTracker\obj\Debug\App.baml
-C:\Users\Krach\RiderProjects\SaveTracker\obj\Debug\SaveTrackerSettingsView.baml
-C:\Users\Krach\RiderProjects\SaveTracker\obj\Debug\SaveTrackerSettingsView.g.cs
-C:\Users\Krach\RiderProjects\SaveTracker\obj\Debug\SaveTracker_MarkupCompile.cache
-C:\Users\Krach\RiderProjects\SaveTracker\obj\Debug\SaveTracker.g.resources
-C:\Users\Krach\RiderProjects\SaveTracker\obj\Debug\SaveTracker.csproj.CoreCompileInputs.cache
-C:\Users\Krach\RiderProjects\SaveTracker\obj\Debug\SaveTrac.89087B41.Up2Date
-C:\Users\Krach\RiderProjects\SaveTracker\obj\Debug\SaveTracker.dll
-C:\Users\Krach\RiderProjects\SaveTracker\obj\Debug\SaveTracker.pdb
+C:\Users\Game Mode\Documents\RiderProjects\SaveTracker\bin\Debug\TraceReloggerLib.dll
+C:\Users\Game Mode\Documents\RiderProjects\SaveTracker\bin\Debug\Dia2Lib.dll
+C:\Users\Game Mode\Documents\RiderProjects\SaveTracker\bin\Debug\x86\KernelTraceControl.dll
+C:\Users\Game Mode\Documents\RiderProjects\SaveTracker\bin\Debug\x86\KernelTraceControl.Win61.dll
+C:\Users\Game Mode\Documents\RiderProjects\SaveTracker\bin\Debug\x86\msdia140.dll
+C:\Users\Game Mode\Documents\RiderProjects\SaveTracker\bin\Debug\amd64\KernelTraceControl.dll
+C:\Users\Game Mode\Documents\RiderProjects\SaveTracker\bin\Debug\amd64\msdia140.dll
+C:\Users\Game Mode\Documents\RiderProjects\SaveTracker\bin\Debug\arm64\KernelTraceControl.dll
+C:\Users\Game Mode\Documents\RiderProjects\SaveTracker\bin\Debug\arm64\msdia140.dll
+C:\Users\Game Mode\Documents\RiderProjects\SaveTracker\bin\Debug\extension.yaml
+C:\Users\Game Mode\Documents\RiderProjects\SaveTracker\bin\Debug\Localization\en_US.xaml
+C:\Users\Game Mode\Documents\RiderProjects\SaveTracker\bin\Debug\SaveTracker.dll.config
+C:\Users\Game Mode\Documents\RiderProjects\SaveTracker\bin\Debug\SaveTracker.dll
+C:\Users\Game Mode\Documents\RiderProjects\SaveTracker\bin\Debug\SaveTracker.pdb
+C:\Users\Game Mode\Documents\RiderProjects\SaveTracker\bin\Debug\Newtonsoft.Json.dll
+C:\Users\Game Mode\Documents\RiderProjects\SaveTracker\bin\Debug\Playnite.SDK.dll
+C:\Users\Game Mode\Documents\RiderProjects\SaveTracker\bin\Debug\Microsoft.Bcl.AsyncInterfaces.dll
+C:\Users\Game Mode\Documents\RiderProjects\SaveTracker\bin\Debug\Microsoft.Diagnostics.FastSerialization.dll
+C:\Users\Game Mode\Documents\RiderProjects\SaveTracker\bin\Debug\Microsoft.Diagnostics.NETCore.Client.dll
+C:\Users\Game Mode\Documents\RiderProjects\SaveTracker\bin\Debug\Microsoft.Diagnostics.Tracing.TraceEvent.dll
+C:\Users\Game Mode\Documents\RiderProjects\SaveTracker\bin\Debug\Microsoft.Extensions.Configuration.Abstractions.dll
+C:\Users\Game Mode\Documents\RiderProjects\SaveTracker\bin\Debug\Microsoft.Extensions.Configuration.Binder.dll
+C:\Users\Game Mode\Documents\RiderProjects\SaveTracker\bin\Debug\Microsoft.Extensions.Configuration.dll
+C:\Users\Game Mode\Documents\RiderProjects\SaveTracker\bin\Debug\Microsoft.Extensions.DependencyInjection.Abstractions.dll
+C:\Users\Game Mode\Documents\RiderProjects\SaveTracker\bin\Debug\Microsoft.Extensions.DependencyInjection.dll
+C:\Users\Game Mode\Documents\RiderProjects\SaveTracker\bin\Debug\Microsoft.Extensions.Diagnostics.Abstractions.dll
+C:\Users\Game Mode\Documents\RiderProjects\SaveTracker\bin\Debug\Microsoft.Extensions.Diagnostics.dll
+C:\Users\Game Mode\Documents\RiderProjects\SaveTracker\bin\Debug\Microsoft.Extensions.Logging.Abstractions.dll
+C:\Users\Game Mode\Documents\RiderProjects\SaveTracker\bin\Debug\Microsoft.Extensions.Logging.dll
+C:\Users\Game Mode\Documents\RiderProjects\SaveTracker\bin\Debug\Microsoft.Extensions.Options.ConfigurationExtensions.dll
+C:\Users\Game Mode\Documents\RiderProjects\SaveTracker\bin\Debug\Microsoft.Extensions.Options.dll
+C:\Users\Game Mode\Documents\RiderProjects\SaveTracker\bin\Debug\Microsoft.Extensions.Primitives.dll
+C:\Users\Game Mode\Documents\RiderProjects\SaveTracker\bin\Debug\Microsoft.Win32.Registry.dll
+C:\Users\Game Mode\Documents\RiderProjects\SaveTracker\bin\Debug\SharpVectors.Converters.Wpf.dll
+C:\Users\Game Mode\Documents\RiderProjects\SaveTracker\bin\Debug\SharpVectors.Core.dll
+C:\Users\Game Mode\Documents\RiderProjects\SaveTracker\bin\Debug\SharpVectors.Css.dll
+C:\Users\Game Mode\Documents\RiderProjects\SaveTracker\bin\Debug\SharpVectors.Dom.dll
+C:\Users\Game Mode\Documents\RiderProjects\SaveTracker\bin\Debug\SharpVectors.Model.dll
+C:\Users\Game Mode\Documents\RiderProjects\SaveTracker\bin\Debug\SharpVectors.Rendering.Wpf.dll
+C:\Users\Game Mode\Documents\RiderProjects\SaveTracker\bin\Debug\SharpVectors.Runtime.Wpf.dll
+C:\Users\Game Mode\Documents\RiderProjects\SaveTracker\bin\Debug\System.Buffers.dll
+C:\Users\Game Mode\Documents\RiderProjects\SaveTracker\bin\Debug\System.Collections.Immutable.dll
+C:\Users\Game Mode\Documents\RiderProjects\SaveTracker\bin\Debug\System.Diagnostics.DiagnosticSource.dll
+C:\Users\Game Mode\Documents\RiderProjects\SaveTracker\bin\Debug\System.Memory.dll
+C:\Users\Game Mode\Documents\RiderProjects\SaveTracker\bin\Debug\System.Numerics.Vectors.dll
+C:\Users\Game Mode\Documents\RiderProjects\SaveTracker\bin\Debug\System.Reflection.Metadata.dll
+C:\Users\Game Mode\Documents\RiderProjects\SaveTracker\bin\Debug\System.Reflection.TypeExtensions.dll
+C:\Users\Game Mode\Documents\RiderProjects\SaveTracker\bin\Debug\System.Runtime.CompilerServices.Unsafe.dll
+C:\Users\Game Mode\Documents\RiderProjects\SaveTracker\bin\Debug\System.Security.AccessControl.dll
+C:\Users\Game Mode\Documents\RiderProjects\SaveTracker\bin\Debug\System.Security.Principal.Windows.dll
+C:\Users\Game Mode\Documents\RiderProjects\SaveTracker\bin\Debug\System.Text.Encodings.Web.dll
+C:\Users\Game Mode\Documents\RiderProjects\SaveTracker\bin\Debug\System.Text.Json.dll
+C:\Users\Game Mode\Documents\RiderProjects\SaveTracker\bin\Debug\System.Threading.Tasks.Extensions.dll
+C:\Users\Game Mode\Documents\RiderProjects\SaveTracker\bin\Debug\System.ValueTuple.dll
+C:\Users\Game Mode\Documents\RiderProjects\SaveTracker\bin\Debug\Microsoft.Bcl.AsyncInterfaces.xml
+C:\Users\Game Mode\Documents\RiderProjects\SaveTracker\bin\Debug\Microsoft.Diagnostics.FastSerialization.xml
+C:\Users\Game Mode\Documents\RiderProjects\SaveTracker\bin\Debug\Microsoft.Diagnostics.NETCore.Client.xml
+C:\Users\Game Mode\Documents\RiderProjects\SaveTracker\bin\Debug\Microsoft.Diagnostics.Tracing.TraceEvent.xml
+C:\Users\Game Mode\Documents\RiderProjects\SaveTracker\bin\Debug\Microsoft.Extensions.Configuration.xml
+C:\Users\Game Mode\Documents\RiderProjects\SaveTracker\bin\Debug\Microsoft.Extensions.Configuration.Abstractions.xml
+C:\Users\Game Mode\Documents\RiderProjects\SaveTracker\bin\Debug\Microsoft.Extensions.Configuration.Binder.xml
+C:\Users\Game Mode\Documents\RiderProjects\SaveTracker\bin\Debug\Microsoft.Extensions.DependencyInjection.xml
+C:\Users\Game Mode\Documents\RiderProjects\SaveTracker\bin\Debug\Microsoft.Extensions.DependencyInjection.Abstractions.xml
+C:\Users\Game Mode\Documents\RiderProjects\SaveTracker\bin\Debug\Microsoft.Extensions.Diagnostics.xml
+C:\Users\Game Mode\Documents\RiderProjects\SaveTracker\bin\Debug\Microsoft.Extensions.Diagnostics.Abstractions.xml
+C:\Users\Game Mode\Documents\RiderProjects\SaveTracker\bin\Debug\Microsoft.Extensions.Logging.xml
+C:\Users\Game Mode\Documents\RiderProjects\SaveTracker\bin\Debug\Microsoft.Extensions.Logging.Abstractions.xml
+C:\Users\Game Mode\Documents\RiderProjects\SaveTracker\bin\Debug\Microsoft.Extensions.Options.xml
+C:\Users\Game Mode\Documents\RiderProjects\SaveTracker\bin\Debug\Microsoft.Extensions.Options.ConfigurationExtensions.xml
+C:\Users\Game Mode\Documents\RiderProjects\SaveTracker\bin\Debug\Microsoft.Extensions.Primitives.xml
+C:\Users\Game Mode\Documents\RiderProjects\SaveTracker\bin\Debug\Microsoft.Win32.Registry.xml
+C:\Users\Game Mode\Documents\RiderProjects\SaveTracker\bin\Debug\SharpVectors.Converters.Wpf.xml
+C:\Users\Game Mode\Documents\RiderProjects\SaveTracker\bin\Debug\SharpVectors.Core.xml
+C:\Users\Game Mode\Documents\RiderProjects\SaveTracker\bin\Debug\SharpVectors.Css.xml
+C:\Users\Game Mode\Documents\RiderProjects\SaveTracker\bin\Debug\SharpVectors.Dom.xml
+C:\Users\Game Mode\Documents\RiderProjects\SaveTracker\bin\Debug\SharpVectors.Model.xml
+C:\Users\Game Mode\Documents\RiderProjects\SaveTracker\bin\Debug\SharpVectors.Rendering.Wpf.xml
+C:\Users\Game Mode\Documents\RiderProjects\SaveTracker\bin\Debug\SharpVectors.Runtime.Wpf.xml
+C:\Users\Game Mode\Documents\RiderProjects\SaveTracker\bin\Debug\System.Buffers.xml
+C:\Users\Game Mode\Documents\RiderProjects\SaveTracker\bin\Debug\System.Collections.Immutable.xml
+C:\Users\Game Mode\Documents\RiderProjects\SaveTracker\bin\Debug\System.Diagnostics.DiagnosticSource.xml
+C:\Users\Game Mode\Documents\RiderProjects\SaveTracker\bin\Debug\System.Memory.xml
+C:\Users\Game Mode\Documents\RiderProjects\SaveTracker\bin\Debug\System.Numerics.Vectors.xml
+C:\Users\Game Mode\Documents\RiderProjects\SaveTracker\bin\Debug\System.Reflection.Metadata.xml
+C:\Users\Game Mode\Documents\RiderProjects\SaveTracker\bin\Debug\System.Reflection.TypeExtensions.xml
+C:\Users\Game Mode\Documents\RiderProjects\SaveTracker\bin\Debug\System.Runtime.CompilerServices.Unsafe.xml
+C:\Users\Game Mode\Documents\RiderProjects\SaveTracker\bin\Debug\System.Security.AccessControl.xml
+C:\Users\Game Mode\Documents\RiderProjects\SaveTracker\bin\Debug\System.Security.Principal.Windows.xml
+C:\Users\Game Mode\Documents\RiderProjects\SaveTracker\bin\Debug\System.Text.Encodings.Web.xml
+C:\Users\Game Mode\Documents\RiderProjects\SaveTracker\bin\Debug\System.Text.Json.xml
+C:\Users\Game Mode\Documents\RiderProjects\SaveTracker\bin\Debug\System.Threading.Tasks.Extensions.xml
+C:\Users\Game Mode\Documents\RiderProjects\SaveTracker\bin\Debug\System.ValueTuple.xml
+C:\Users\Game Mode\Documents\RiderProjects\SaveTracker\obj\Debug\SaveTracker.csproj.AssemblyReference.cache
+C:\Users\Game Mode\Documents\RiderProjects\SaveTracker\obj\Debug\App.baml
+C:\Users\Game Mode\Documents\RiderProjects\SaveTracker\obj\Debug\SaveTrackerSettingsView.baml
+C:\Users\Game Mode\Documents\RiderProjects\SaveTracker\obj\Debug\SaveTrackerSettingsView.g.cs
+C:\Users\Game Mode\Documents\RiderProjects\SaveTracker\obj\Debug\SaveTracker_MarkupCompile.cache
+C:\Users\Game Mode\Documents\RiderProjects\SaveTracker\obj\Debug\SaveTracker.g.resources
+C:\Users\Game Mode\Documents\RiderProjects\SaveTracker\obj\Debug\SaveTracker.csproj.CoreCompileInputs.cache
+C:\Users\Game Mode\Documents\RiderProjects\SaveTracker\obj\Debug\SaveTrac.89087B41.Up2Date
+C:\Users\Game Mode\Documents\RiderProjects\SaveTracker\obj\Debug\SaveTracker.dll
+C:\Users\Game Mode\Documents\RiderProjects\SaveTracker\obj\Debug\SaveTracker.pdb
+C:\Users\Game Mode\Documents\RiderProjects\SaveTracker\obj\Debug\SaveTracker_MarkupCompile.lref
+C:\Users\Game Mode\Documents\RiderProjects\SaveTracker\obj\Debug\UploadProgressWindow.baml
+C:\Users\Game Mode\Documents\RiderProjects\SaveTracker\obj\Debug\UploadProgressWindow.g.cs
+C:\Users\Game Mode\Documents\RiderProjects\SaveTracker\bin\Debug\JetBrains.Annotations.dll

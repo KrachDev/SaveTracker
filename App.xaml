@@ -5,7 +5,7 @@
         
         <ResourceDictionary>
             <Style x:Key="BaseTextBlockStyle" TargetType="TextBlock" />
-            <FontFamily x:Key="icons">/SaveTracker;component/icomoon.ttf#fontello</FontFamily>
+            <FontFamily x:Key="Icons">/SaveTracker;component/icomoon.ttf#fontello</FontFamily>
             <ResourceDictionary.MergedDictionaries>                
                 <ResourceDictionary Source="Localization/en_US.xaml" />
             </ResourceDictionary.MergedDictionaries>
